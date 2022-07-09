@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sh/StudioProjects/anime.sh/app/src/main/res/drawable-anydpi/ic_fav.xml" value="0.2565" />
+        <entry key="..\:/Users/sh/StudioProjects/anime.sh/app/src/main/res/drawable-anydpi/ic_fav_grey.xml" value="0.2565" />
+        <entry key="..\:/Users/sh/StudioProjects/anime.sh/app/src/main/res/drawable-anydpi/ic_mal_grey.xml" value="0.2565" />
+        <entry key="..\:/Users/sh/StudioProjects/anime.sh/app/src/main/res/layout/activity_anime.xml" value="0.25416666666666665" />
         <entry key="..\:/android/anime.sh/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.14166666666666666" />
         <entry key="..\:/android/anime.sh/app/src/main/res/drawable/ic_launcher_background.xml" value="0.14166666666666666" />
         <entry key="..\:/android/anime.sh/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.14166666666666666" />
