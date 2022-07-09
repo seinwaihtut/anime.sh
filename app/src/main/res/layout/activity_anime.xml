@@ -152,7 +152,7 @@
             android:id="@+id/anime_mal_button"
             android:layout_width="50dip"
             android:layout_height="50dip"
-            android:background="@color/white"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/add_to_fav"
