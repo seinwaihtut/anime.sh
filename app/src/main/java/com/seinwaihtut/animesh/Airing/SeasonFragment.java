@@ -85,7 +85,8 @@ public class SeasonFragment extends Fragment {
                 launchAnimeActivity(animeObjectArray.get(position));
             }
         });
-        getAnimeList(adapter, "https://api.jikan.moe/v3/season");
+        //getAnimeList(adapter, "https://api.jikan.moe/v3/season");
+        getAnimeList(adapter, "https://api.jikan.moe/v4/seasons/now"); //5/7/2022 updated for jikan api v4
     }
 
     public void launchAnimeActivity(Anime anime) {
@@ -127,7 +128,7 @@ public class SeasonFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return NetworkUtils.get(seasonURL);
+            return NetworkUtils.get(seasonURL, true);
         }
 
         @Override
@@ -167,8 +168,9 @@ public class SeasonFragment extends Fragment {
 
     public void jikanSeasonHelper(String s) {
         try {
-            JSONObject jsonObject = new JSONObject(s);
-            JSONArray animeArray = jsonObject.getJSONArray("anime");
+//            JSONObject jsonObject = new JSONObject(s);
+//            JSONArray animeArray = jsonObject.getJSONArray("data");
+            JSONArray animeArray = new JSONArray(s);
 
             String mal_id = "";
             String mal_url = "";
@@ -181,8 +183,10 @@ public class SeasonFragment extends Fragment {
             String score = "N/A";
             String genres = "N/A";
             String date = "N/A";
-
+            Log.d("SeasonFragment_s", Integer.toString(s.length()));
+            Log.d("SeasonFragment_s", s.substring(94083-20, 94083+1000));
             for (int i = 0; i < animeArray.length(); i++) {
+
                 ArrayList<String> singleAnimeArray = new ArrayList<>();
 
                 JSONObject anime = animeArray.getJSONObject(i);
@@ -190,14 +194,19 @@ public class SeasonFragment extends Fragment {
                 mal_id = anime.getString("mal_id");
                 mal_url = anime.getString("url");
                 title = anime.getString("title");
-                image_url = anime.getString("image_url");
+                Log.d("SeasonFragment_title", title);
+                image_url = anime.getJSONObject("images").getJSONObject("jpg").getString("image_url");
+//                Log.d("SeasonFragment_images", image_url);
                 synopsis = anime.getString("synopsis");
                 type = anime.getString("type");
-                day = getDay(anime.getString("airing_start"));
-                date = getDate(anime.getString("airing_start"));
+
+                day = getDay(anime.getJSONObject("aired").getString("from"));
+                date = getDate(anime.getJSONObject("aired").getString("from"));
+//                Log.d("SeasonFragment_day", day);
+
                 episodes = anime.getString("episodes");
                 score = anime.getString("score");
-
+//                Log.d("SeasonFragment_score", score);
                 JSONArray genre = anime.getJSONArray("genres");
                 genres = "";
                 for (int j = 0; j < genre.length(); j++) {

@@ -216,7 +216,8 @@ public class AnimeActivity extends AppCompatActivity {
     }
 
     public String buildJikanAnimeQueryString(String id) {
-        return "https://api.jikan.moe/v3/anime/" + id;
+        //return "https://api.jikan.moe/v3/anime/" + id;
+        return "https://api.jikan.moe/v4/anime/" + id; // 5/7/2022 updated for jikan api v4
     }
 
     public void getAnime(TextView airing_start, TextView day_time, String url) {
@@ -239,10 +240,10 @@ public class AnimeActivity extends AppCompatActivity {
         try {
             Log.i("jikanAnimeHelper", s);
             JSONObject jsonObject = new JSONObject(s);
-            String broadcast = jsonObject.getString("broadcast");
+            String broadcast = jsonObject.getJSONObject("data").getJSONObject("broadcast").getString("string");
             Log.i("AnimeActivity jikanAnimeHelper", broadcast);
 
-            String air_start_end = jsonObject.getJSONObject("aired").getString("string");
+            String air_start_end = jsonObject.getJSONObject("data").getJSONObject("aired").getString("string");
             Log.i("AnimeActivity jikanAnimeHelper", air_start_end);
 
             airing_start.setText(air_start_end);
@@ -269,7 +270,7 @@ public class AnimeActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return NetworkUtils.get(url);
+            return NetworkUtils.get(url, false);
         }
 
         @Override
@@ -319,7 +320,7 @@ public class AnimeActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return NetworkUtils.get(url);
+            return NetworkUtils.get(url, false);
         }
 
         @Override

@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,5 +19,6 @@ public class MainActivity extends AppCompatActivity {
         MainFragment fragment = new MainFragment();
         fragmentTransaction.add(R.id.main_activity_fragment_container, fragment);
         fragmentTransaction.commit();
+
     }
 }
