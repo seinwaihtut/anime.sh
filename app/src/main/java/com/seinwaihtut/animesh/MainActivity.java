@@ -6,22 +6,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.seinwaihtut.animesh.LogIn.LogInMainFragment;
 
 public class MainActivity extends AppCompatActivity {
     private Boolean loggedIn = false;
+    private FirebaseAuth mAuth;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser!=null){
+            currentUser.reload();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
         if(loggedIn){
             displayMainFragment();
         }
         else{
             displayLogInFragment();
         }
+
+
 
     }
     public void displayMainFragment(){

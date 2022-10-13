@@ -1,10 +1,12 @@
 package com.seinwaihtut.animesh.LogIn;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.seinwaihtut.animesh.MainFragment;
 import com.seinwaihtut.animesh.R;
 
@@ -31,6 +37,7 @@ public class LogInFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private FirebaseAuth mAuth;
     public LogInFragment() {
         // Required empty public constructor
     }
@@ -72,10 +79,31 @@ public class LogInFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EditText emailEditText = view.findViewById(R.id.login_email_edit_text);
+        EditText passwordEditText = view.findViewById(R.id.login_password_edit_text);
+
         Button loginButton = view.findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                String email = emailEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                mAuth = FirebaseAuth.getInstance();
+
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if(task.isSuccessful()) {
+                                    Log.d("LogInFragment", "signInWithEmail:success");
+                                }
+                                else{
+                                    Log.d("LogInFragment", "signInWithEmail:failure", task.getException());
+                                }
+                            }
+                        });
+
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 MainFragment fragment = new MainFragment();

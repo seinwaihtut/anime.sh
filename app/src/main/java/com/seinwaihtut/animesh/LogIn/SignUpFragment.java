@@ -1,6 +1,7 @@
 package com.seinwaihtut.animesh.LogIn;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.seinwaihtut.animesh.R;
 
 /**
@@ -31,6 +37,9 @@ public class SignUpFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private FirebaseAuth mAuth;
+
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -61,6 +70,8 @@ public class SignUpFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
@@ -82,9 +93,30 @@ public class SignUpFragment extends Fragment {
 
         Button registerButton = view.findViewById(R.id.register_register_button);
 
+
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String email = emailAddressEditText.getText().toString();
+                Log.d("SignUpFragment", email);
+
+                String password = passwordEditText.getText().toString();
+                Log.d("SignUpFragment", password);
+                mAuth = FirebaseAuth.getInstance();
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            Log.d("SignUpFragment", "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                        }
+                        else{
+                            Log.w("SignUpFragment", "createUserWithEmail:failure", task.getException());
+
+                        }
+                    }
+                });
+
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 LogInFragment fragment = new LogInFragment();

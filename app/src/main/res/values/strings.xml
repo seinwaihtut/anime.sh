@@ -10,6 +10,7 @@
     <string name="login_welcome_back">Welcome Back</string>
     <string name="login_login">Login to your account</string>
     <string name="login_username_input">Username</string>
+    <string name="login_email_input">Email address</string>
     <string name="login_password_input">Password</string>
     <string name="login_remember_me">Remember me</string>
     <string name="login_forgot_password">Forgot password?</string>
