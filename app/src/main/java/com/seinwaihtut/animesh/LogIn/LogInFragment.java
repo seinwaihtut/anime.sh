@@ -1,12 +1,15 @@
 package com.seinwaihtut.animesh.LogIn;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -89,6 +92,8 @@ public class LogInFragment extends Fragment {
 
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
+                Boolean email_validated = isValidEmail(email);
+                if(!email.isEmpty() && !password.isEmpty() && email_validated){
                 mAuth = FirebaseAuth.getInstance();
 
                 mAuth.signInWithEmailAndPassword(email, password)
@@ -96,20 +101,30 @@ public class LogInFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()) {
+                                    FragmentManager fragmentManager = getParentFragmentManager();
+                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                    MainFragment fragment = new MainFragment();
+                                    transaction.replace(R.id.main_activity_fragment_container, fragment).setReorderingAllowed(true);
+                                    transaction.commit();
                                     Log.d("LogInFragment", "signInWithEmail:success");
                                 }
+
                                 else{
                                     Log.d("LogInFragment", "signInWithEmail:failure", task.getException());
+                                    Toast.makeText(getContext(), "Please check your email and password", Toast.LENGTH_SHORT);
                                 }
                             }
-                        });
-
-                FragmentManager fragmentManager = getParentFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                MainFragment fragment = new MainFragment();
-                transaction.replace(R.id.main_activity_fragment_container, fragment).setReorderingAllowed(true);
-                transaction.commit();
+                        });}
+                else if(email_validated == false){
+                    Toast.makeText(getContext(), "Please check your email", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(getContext(), "Please enter email and password", Toast.LENGTH_SHORT);
+                }
             }
         });
+    }
+    public static boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 }

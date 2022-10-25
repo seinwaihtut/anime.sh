@@ -46,6 +46,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
 
+    implementation 'com.squareup.retrofit2:retrofit:2.7.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:30.5.0')
 
@@ -58,5 +61,7 @@ dependencies {
     // See https://firebase.google.com/docs/android/setup#available-libraries
     // For example, add the dependencies for Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-auth'
+
+    implementation 'org.glassfish:javax.annotation:10.0-b28'
 
 }

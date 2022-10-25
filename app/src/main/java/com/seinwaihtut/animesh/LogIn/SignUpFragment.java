@@ -1,13 +1,16 @@
 package com.seinwaihtut.animesh.LogIn;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +24,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.seinwaihtut.animesh.R;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,8 +76,6 @@ public class SignUpFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
@@ -88,20 +92,22 @@ public class SignUpFragment extends Fragment {
         EditText emailAddressEditText = view.findViewById(R.id.register_edit_text_email_address);
         EditText passwordEditText = view.findViewById(R.id.register_edit_text_password);
         EditText confirmPasswordEditText = view.findViewById(R.id.register_edit_text_confirm_password);
-
+        EditText phoneEditText = view.findViewById(R.id.register_edit_text_phone_no);
         TextView loginTextView = view.findViewById(R.id.register_login_text_button);
-
         Button registerButton = view.findViewById(R.id.register_register_button);
-
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = emailAddressEditText.getText().toString();
-                Log.d("SignUpFragment", email);
-
                 String password = passwordEditText.getText().toString();
-                Log.d("SignUpFragment", password);
+                String confirm_password = confirmPasswordEditText.getText().toString();
+                String phoneNo = phoneEditText.getText().toString();
+                Boolean email_validated = isValidEmail(email);
+                Boolean phone_validated = isValidPhone(phoneNo);
+
+
+                if (email_validated && phone_validated && password.equals(confirm_password)){
                 mAuth = FirebaseAuth.getInstance();
                 mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -121,9 +127,21 @@ public class SignUpFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 LogInFragment fragment = new LogInFragment();
                 fragmentTransaction.replace(R.id.main_activity_fragment_container, fragment).setReorderingAllowed(true);
-                fragmentTransaction.commit();
+                fragmentTransaction.commit();}
+            else{
+                    Toast.makeText(getContext(), "Please check your input fields", Toast.LENGTH_SHORT).show();
             }
+            }
+
         });
 
+    }
+    public static boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
+    }
+    public static boolean isValidPhone(String phoneNo){
+        Pattern phonePattern = Pattern.compile("^((09|\\+?959)?\\d{7,10})$");
+        Matcher matcher = phonePattern.matcher(phoneNo);
+        return matcher.matches();
     }
 }
