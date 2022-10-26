@@ -92,32 +92,23 @@ public class AnimeActivity extends AppCompatActivity {
         final Bundle extras = getIntent().getExtras();
         if (extras != null) {
 
-            animeObject = new Anime(extras.getString("mal_id"),
+            animeObject = new Anime((extras.getInt("mal_id")),
                     extras.getString("mal_url"),
                     extras.getString("image_url"),
-                    extras.getString("title"),
-                    extras.getString("score"),
-                    extras.getString("no_episodes"),
-                    extras.getString("genres"),
-                    extras.getString("synopsis"),
-                    extras.getString(""),
-                    extras.getString("")
+                    extras.getString("title")
                     );
 
             Glide.with(poster).load(animeObject.getImage_url()).into(poster);
             title.setText(animeObject.getTitle());
-            score.setText("Rating : " + animeObject.getScore());
-            no_episodes.setText("Episodes : " + animeObject.getNo_episodes());
-            synopsis.setText("Synopsis : " + animeObject.getSynopsis());
-            genres.setText("Genres : " + animeObject.getGenres());
+
             editTextSearch.setText(animeObject.getTitle());
         }
 
-        if (!(readSharedPrefs("Search_terms", animeObject.getMal_id()).isEmpty())) {
-            editTextSearch.setText(readSharedPrefs("Search_terms", animeObject.getMal_id()));
+        if (!(readSharedPrefs("Search_terms", Integer.toString(animeObject.getMal_id())).isEmpty())) {
+            editTextSearch.setText(readSharedPrefs("Search_terms", Integer.toString(animeObject.getMal_id())));
         }
 
-        getAnime(airing_start, day_time, buildJikanAnimeQueryString(animeObject.getMal_id()));
+        getAnime(airing_start, day_time, buildJikanAnimeQueryString(Integer.toString(animeObject.getMal_id())));
 
 
         String searchString = NyaaSearchURLBuilder(editTextSearch.getText().toString());
@@ -126,7 +117,7 @@ public class AnimeActivity extends AppCompatActivity {
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editSharedPrefs("Search_terms", animeObject.getMal_id(), editTextSearch.getText().toString());
+                editSharedPrefs("Search_terms", Integer.toString(animeObject.getMal_id()), editTextSearch.getText().toString());
                 String search = NyaaSearchURLBuilder(editTextSearch.getText().toString());
                 search(adapter, search);
             }
@@ -143,12 +134,12 @@ public class AnimeActivity extends AppCompatActivity {
 
         fav = (ToggleButton) findViewById(R.id.add_to_fav);
 
-        if (getToggleButtonStatus(animeObject.getMal_id())){
-            fav.setChecked(getToggleButtonStatus(animeObject.getMal_id()));
+        if (getToggleButtonStatus(Integer.toString(animeObject.getMal_id()))){
+            fav.setChecked(getToggleButtonStatus(Integer.toString(animeObject.getMal_id())));
             fav.setBackgroundDrawable(getDrawable(R.drawable.ic_fav));
             fav_tv.setText("In Watching");
         }else {
-            fav.setChecked(getToggleButtonStatus(animeObject.getMal_id()));
+            fav.setChecked(getToggleButtonStatus(Integer.toString(animeObject.getMal_id())));
             fav.setBackgroundDrawable(getDrawable(R.drawable.ic_fav_grey));
             fav_tv.setText("Add to Watching");
         }
@@ -158,21 +149,19 @@ public class AnimeActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     //Toggle is enabled
-                    animeObject.setBroadcast(day_time.getText().toString());
                     mAnimeViewModel.insert(animeObject);
 
                     fav.setBackgroundDrawable(getDrawable(R.drawable.ic_fav));
                     fav_tv.setText("In Watching");
 
-                    setToggleButtonStatus(animeObject.getMal_id(), true);
+                    setToggleButtonStatus(Integer.toString(animeObject.getMal_id()), true);
                 } else {
                     //Toggle is disabled
-                    animeObject.setBroadcast(day_time.getText().toString());
                     mAnimeViewModel.deleteAnime(animeObject);
                     fav.setBackgroundDrawable(getDrawable(R.drawable.ic_fav_grey));
                     fav_tv.setText("Add to Watching");
 
-                    setToggleButtonStatus(animeObject.getMal_id(), false);
+                    setToggleButtonStatus(Integer.toString(animeObject.getMal_id()), false);
                 }
             }
         });

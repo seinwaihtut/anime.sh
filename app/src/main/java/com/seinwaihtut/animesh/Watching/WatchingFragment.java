@@ -14,8 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.seinwaihtut.animesh.Airing.SeasonRecyclerAdapter;
 import com.seinwaihtut.animesh.Anime.AnimeActivity;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.DB.AnimeViewModel;
@@ -70,10 +68,7 @@ public class WatchingFragment extends Fragment {
         intent.putExtra("mal_url", anime.getMal_url());
         intent.putExtra("image_url", anime.getImage_url());
         intent.putExtra("title", anime.getTitle());
-        intent.putExtra("score", anime.getScore());
-        intent.putExtra("no_episodes", anime.getNo_episodes());
-        intent.putExtra("genres", anime.getGenres());
-        intent.putExtra("synopsis", anime.getSynopsis());
+
 
         startActivity(intent);
     }

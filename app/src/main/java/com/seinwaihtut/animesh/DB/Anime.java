@@ -1,137 +1,175 @@
 package com.seinwaihtut.animesh.DB;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "anime_table")
 public class Anime {
-    @NonNull
-    @PrimaryKey()
-    private String mal_id;
+    @PrimaryKey
+    private Integer mal_id;
 
-    @ColumnInfo(name = "mal_url")
     private String mal_url;
 
-    @ColumnInfo(name = "image_url")
     private String image_url;
 
-    @ColumnInfo(name = "title")
-    private String title;
+    private String title; //Default title
 
-    @ColumnInfo(name = "score")
-    private String score;
+    private String title_en; //English , Optional
 
-    @ColumnInfo(name = "no_episodes")
-    private String no_episodes;
+    private String title_jp; //Japanese title, Optional
 
-    @ColumnInfo(name = "genres")
-    private String genres;
+    private String type; //optional
 
-    @ColumnInfo(name = "synopsis")
-    private String synopsis;
+    private String source; //optional
 
-    @ColumnInfo(name = "airing_start")
-    private String airing_start;
+    private Integer episodes; //optional
 
-    @ColumnInfo(name = "broadcast")
-    private String broadcast;
+    private String aired_string; //optional 	"Oct 12, 2022 to ?"
 
+    private Integer score; //optional
 
-    public Anime() {
-    }
+    private String synopsis; //optional
 
-    public Anime(String mal_id, String mal_url, String image_url, String title, String score, String no_episodes, String genres, String synopsis, String airing_start, String broadcast) {
-        this.mal_id = mal_id;
-        this.mal_url = mal_url;
-        this.image_url = image_url;
-        this.title = title;
-        this.score = score;
-        this.no_episodes = no_episodes;
-        this.genres = genres;
-        this.synopsis = synopsis;
-        this.airing_start = airing_start;
-        this.broadcast = broadcast;
-    }
+    private String season; //optional e.g. fall
 
-    public String getTitle() {
-        return this.title;
-    }
+    private Integer year; //optional e.g. 2022
 
-    public String getImage_url() {
-        return this.image_url;
-    }
+    private String broadcast_string; //optional e.g. "Wednesdays at 00:00 (JST)"
 
-    public String getMal_url() {
-        return this.mal_url;
-    }
+    private String genres; //optional
 
-    public String getScore() {
-        return this.score;
-    }
-
-    public String getAiring_start() {
-        return this.airing_start;
-    }
-
-    public String getNo_episodes() {
-        return this.no_episodes;
-    }
-
-    public String getGenres() {
-        return this.genres;
-    }
-
-    public String getBroadcast() {
-        return this.broadcast;
-    }
-
-    public String getSynopsis() {
-        return this.synopsis;
-    }
-
-    public String getMal_id() {
+    public Integer getMal_id() {
         return mal_id;
     }
 
-    public void setMal_id(String mal_id) {
+    public void setMal_id(Integer mal_id) {
         this.mal_id = mal_id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setImage_url(String imageUrl) {
-        this.image_url = imageUrl;
+    public String getMal_url() {
+        return mal_url;
     }
 
     public void setMal_url(String mal_url) {
         this.mal_url = mal_url;
     }
 
-    public void setScore(String score) {
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle_en() {
+        return title_en;
+    }
+
+    public void setTitle_en(String title_en) {
+        this.title_en = title_en;
+    }
+
+    public String getTitle_jp() {
+        return title_jp;
+    }
+
+    public void setTitle_jp(String title_jp) {
+        this.title_jp = title_jp;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Integer getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(Integer episodes) {
+        this.episodes = episodes;
+    }
+
+    public String getAired_string() {
+        return aired_string;
+    }
+
+    public void setAired_string(String aired_string) {
+        this.aired_string = aired_string;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
         this.score = score;
     }
 
-    public void setAiring_start(String airing_start) {
-        this.airing_start = airing_start;
+    public String getSynopsis() {
+        return synopsis;
     }
 
-    public void setNo_episodes(String no_episodes) {
-        this.no_episodes = no_episodes;
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public String getBroadcast_string() {
+        return broadcast_string;
+    }
+
+    public void setBroadcast_string(String broadcast_string) {
+        this.broadcast_string = broadcast_string;
+    }
+
+    public String getGenres() {
+        return genres;
     }
 
     public void setGenres(String genres) {
         this.genres = genres;
     }
 
-    public void setBroadcast(String broadcast) {
-        this.broadcast = broadcast;
-    }
-
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
+    public Anime(Integer mal_id, String mal_url, String image_url, String title) {
+        this.mal_id = mal_id;
+        this.mal_url = mal_url;
+        this.image_url = image_url;
+        this.title = title;
     }
 }

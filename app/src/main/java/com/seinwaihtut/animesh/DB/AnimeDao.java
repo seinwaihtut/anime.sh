@@ -12,25 +12,18 @@ import java.util.List;
 
 @Dao
 public interface AnimeDao {
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Anime anime);
+
+    @Update
+    void update(Anime anime);
+
+    @Delete
+    void delete(Anime anime);
 
     @Query("DELETE FROM anime_table")
     void deleteAll();
 
-    @Delete
-    void deleteAnime(Anime anime);
-
-    @Query("SELECT * from anime_table LIMIT 1")
-    Anime[] getAnyAnime();
-
-    @Query("SELECT * from anime_table")
-    LiveData<List<Anime>> getAllAnime();
-
-//    @Query("SELECT mal_id from anime_table")
-//    Anime getAnime(String mal_id);
-
-    @Update
-    void update(Anime... anime);
+    @Query("SELECT * FROM anime_table")
+    LiveData<List<Anime>> getFavAnime();
 }

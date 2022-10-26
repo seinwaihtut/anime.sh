@@ -20,6 +20,11 @@ public class SeasonRecyclerAdapter extends RecyclerView.Adapter<SeasonRecyclerAd
     private ArrayList<Anime> localAnimeObjectList = new ArrayList<>();
     private static ClickListener clickListener;
 
+    public void setData(ArrayList<Anime> arrayList){
+        this.localAnimeObjectList = arrayList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public SeasonRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,8 +38,6 @@ public class SeasonRecyclerAdapter extends RecyclerView.Adapter<SeasonRecyclerAd
             ImageView imageView = holder.getPoster();
             Glide.with(imageView).load(localAnimeObjectList.get(position).getImage_url()).placeholder(R.drawable.placeholder).override(337, 477).into(imageView);
             holder.getTitle().setText(localAnimeObjectList.get(position).getTitle());
-            holder.getDate_time().setText(localAnimeObjectList.get(position).getAiring_start());
-            holder.getScore().setText("Score : "+localAnimeObjectList.get(position).getScore());
         }
     }
 

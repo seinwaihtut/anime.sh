@@ -3,7 +3,6 @@ package com.seinwaihtut.animesh;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
 import com.seinwaihtut.animesh.Airing.SeasonFragment;
 import com.seinwaihtut.animesh.Watching.WatchingFragment;
 

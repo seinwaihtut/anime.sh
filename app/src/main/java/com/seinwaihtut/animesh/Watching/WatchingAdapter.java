@@ -35,9 +35,9 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
     public void onBindViewHolder(@NonNull WatchingAdapter.ViewHolder holder, int position) {
         if (mAnimes != null) {
             Anime current = mAnimes.get(position);
-            holder.score.setText("Score : " + current.getScore());
+
             holder.title.setText(current.getTitle());
-            holder.day_time.setText(current.getBroadcast());
+
 
 
             ImageView imageView = holder.poster;

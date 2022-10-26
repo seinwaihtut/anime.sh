@@ -1,51 +1,36 @@
 package com.seinwaihtut.animesh.Airing;
 
-import android.content.Context;
 import android.content.Intent;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.ParseException;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.seinwaihtut.animesh.Airing.POJO.Datum;
-import com.seinwaihtut.animesh.Airing.POJO.Genre;
-import com.seinwaihtut.animesh.Airing.POJO.Jikanv4SeasonNowResponse;
 import com.seinwaihtut.animesh.Anime.AnimeActivity;
 import com.seinwaihtut.animesh.DB.Anime;
-import com.seinwaihtut.animesh.Network.NetworkUtils;
 import com.seinwaihtut.animesh.R;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.seinwaihtut.animesh.SharedViewModel;
 
 import java.util.ArrayList;
-import java.util.Date;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SeasonFragment extends Fragment {
 
+    private SharedViewModel sharedViewModel;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
+
+
 
     ArrayList<Anime> animeObjectArray = new ArrayList<Anime>();
 
@@ -94,10 +79,18 @@ public class SeasonFragment extends Fragment {
         });
 
 
-        //getAnimeList(adapter, "https://api.jikan.moe/v3/season");
-        //getAnimeList(adapter, "https://api.jikan.moe/v4/seasons/now"); //5/7/2022 updated for jikan api v4
 
-        getAiringList(view, adapter);
+
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.getCurrentSeason().observe(getViewLifecycleOwner(), new Observer<ArrayList<Anime>>(){
+
+            @Override
+            public void onChanged(ArrayList arrayList) {
+                    adapter.setData(arrayList);
+            }
+        });
+
+
     }
 
     public void launchAnimeActivity(Anime anime) {
@@ -106,212 +99,12 @@ public class SeasonFragment extends Fragment {
         intent.putExtra("mal_url", anime.getMal_url());
         intent.putExtra("image_url", anime.getImage_url());
         intent.putExtra("title", anime.getTitle());
-        intent.putExtra("score", anime.getScore());
-        intent.putExtra("no_episodes", anime.getNo_episodes());
-        intent.putExtra("genres", anime.getGenres());
-        intent.putExtra("synopsis", anime.getSynopsis());
-
         startActivity(intent);
     }
 
-    public void getAnimeList(SeasonRecyclerAdapter adapter, String url) {
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = null;
-        if (connMgr != null) {
-            networkInfo = connMgr.getActiveNetworkInfo();
-        }
-        if (networkInfo != null && networkInfo.isConnected()
-        ) {
-            new SeasonAsyncTask(adapter, url).execute();
-        } else {
-            Log.e("main_activity", "connection error");
-        }
-    }
-
-    private class SeasonAsyncTask extends AsyncTask<Void, Void, String> {
-        SeasonRecyclerAdapter mAdapter;
-        String seasonURL;
-
-        SeasonAsyncTask(SeasonRecyclerAdapter adapter, String url) {
-            mAdapter = adapter;
-            seasonURL = url;
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return NetworkUtils.get(seasonURL, true);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            animeObjectArray.clear();
-            jikanSeasonHelper(s);
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private String getDay(String date) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        String day = "";
-        try {
-            Date d1 = df.parse(date);
-            DateFormat df2 = new SimpleDateFormat("E");
-            day = df2.format(d1);
-        } catch (ParseException | java.text.ParseException e) {
-            e.printStackTrace();
-        }
-        return day;
-    }
-
-    private String getDate(String date) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        String day = "";
-        try {
-            Date d1 = df.parse(date);
-            DateFormat df2 = new SimpleDateFormat("dd-MM-YYYY");
-            day = df2.format(d1);
-        } catch (ParseException | java.text.ParseException e) {
-            e.printStackTrace();
-        }
-        return day;
-    }
-
-    public void jikanSeasonHelper(String s) {
-        try {
-//            JSONObject jsonObject = new JSONObject(s);
-//            JSONArray animeArray = jsonObject.getJSONArray("data");
-            JSONArray animeArray = new JSONArray(s);
-
-            String mal_id = "";
-            String mal_url = "";
-            String title = "";
-            String image_url = "";
-            String synopsis = "N/A";
-            String type = "";
-            String day = "N/A";
-            String episodes = "N/A";
-            String score = "N/A";
-            String genres = "N/A";
-            String date = "N/A";
-//            Log.d("SeasonFragment_s", Integer.toString(s.length()));
-//            Log.d("SeasonFragment_s", s.substring(94083-20, 94083+1000));
-            for (int i = 0; i < animeArray.length(); i++) {
-
-                ArrayList<String> singleAnimeArray = new ArrayList<>();
-
-                JSONObject anime = animeArray.getJSONObject(i);
-
-                mal_id = anime.getString("mal_id");
-                mal_url = anime.getString("url");
-                title = anime.getString("title");
-                Log.d("SeasonFragment_title", title);
-                image_url = anime.getJSONObject("images").getJSONObject("jpg").getString("image_url");
-//                Log.d("SeasonFragment_images", image_url);
-                synopsis = anime.getString("synopsis");
-                type = anime.getString("type");
-
-                day = getDay(anime.getJSONObject("aired").getString("from"));
-                date = getDate(anime.getJSONObject("aired").getString("from"));
-//                Log.d("SeasonFragment_day", day);
-
-                episodes = anime.getString("episodes");
-                score = anime.getString("score");
-//                Log.d("SeasonFragment_score", score);
-                JSONArray genre = anime.getJSONArray("genres");
-                genres = "";
-                for (int j = 0; j < genre.length(); j++) {
-                    genres += genre.getJSONObject(j).getString("name") + ", ";
-                }
-                if (genres == null) {
-                    genres = "";
-                }
-
-                singleAnimeArray.add(mal_id);
-                singleAnimeArray.add(mal_url);
-                singleAnimeArray.add(title);
-                singleAnimeArray.add(image_url);
-                singleAnimeArray.add(synopsis);
-                singleAnimeArray.add(type);
-                singleAnimeArray.add(day);
-                singleAnimeArray.add(episodes);
-                singleAnimeArray.add(score);
-                singleAnimeArray.add(genres);
-
-                if (type.equals("TV")) {
-                    Anime animeObject = new Anime(mal_id, mal_url, image_url, title, score, episodes, genres, synopsis, date, day);
-                    animeObjectArray.add(animeObject);
-                }
-            }
-        } catch (Exception e) {
-            Log.e("SeasonFragment", "error in jikanJSONHelper");
-        }
-    }
-
-    private void getAiringList(View view, SeasonRecyclerAdapter mAdapter){
-        ProgressBar progressBar = view.findViewById(R.id.season_progress_bar);
 
 
-        ArrayList<Anime> tempList = new ArrayList<>();
-        Call<Jikanv4SeasonNowResponse> call = RetrofitClientAiring.getInstance().getJikanAPIInterface().getSeasonNow();
-        call.enqueue(new Callback<Jikanv4SeasonNowResponse>() {
-            @Override
-            public void onResponse(Call<Jikanv4SeasonNowResponse> call, Response<Jikanv4SeasonNowResponse> response) {
-                Jikanv4SeasonNowResponse jikanResponse = response.body();
-                for(Datum data: jikanResponse.getData()){
-
-                    String mal_id;
-                    String mal_url;
-                    String image_url;
-                    String title;
-                    String score = "0";
-                    String episodes ="0";
-                    String genres ="";
-                    String synopsis ="";
-                    String date ="";
-                    String day ="";
 
 
-                    if(data.getMalId()==null || data.getUrl()==null || data.getImages().getJpg().getImageUrl()==null || data.getTitle()==null){continue;}
 
-                    if (data.getScore()!=null){
-                        score = data.getScore().toString();
-                    }
-                    if (data.getEpisodes()!=null){
-                        episodes = data.getEpisodes().toString();
-                    }
-                    if (data.getSynopsis()!=null){
-                        synopsis = data.getSynopsis();
-                    }
-                    if (data.getAired().getFrom() != null){
-                        date = data.getAired().getFrom().substring(0,10);
-                    }
-                    if (data.getBroadcast().getString() != null){
-                        day = data.getBroadcast().getString();
-                    }
-                    if (data.getGenres()!=null){
-                        {   ArrayList<String> genresArrayList = new ArrayList<>();
-                            for(Genre genre: data.getGenres()){
-                                genresArrayList.add(genre.getName());
-                            }
-                            genres = genresArrayList.toString();
-                        }
-                    }
-                    Anime animeObject = new Anime(data.getMalId().toString(), data.getUrl(), data.getImages().getJpg().getImageUrl(), data.getTitle(), score, episodes, genres, synopsis, date, day);
-                    animeObjectArray.add(animeObject);
-                    mAdapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.GONE);
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Jikanv4SeasonNowResponse> call, Throwable t) {
-                Log.d("SeasonFragment_retrofit", t.toString());
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
-    }
 }
