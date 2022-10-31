@@ -64,4 +64,6 @@ dependencies {
 
     implementation 'org.glassfish:javax.annotation:10.0-b28'
 
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
 }

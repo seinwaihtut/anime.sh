@@ -26,4 +26,5 @@ public interface AnimeDao {
 
     @Query("SELECT * FROM anime_table")
     LiveData<List<Anime>> getFavAnime();
+
 }

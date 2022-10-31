@@ -10,11 +10,14 @@ import java.util.List;
 public class AnimeViewModel extends AndroidViewModel {
     private AnimeRepository mRepository;
     private LiveData<List<Anime>> mAllAnime;
+    private LiveData<List<Anime>> testJSON;
+
 
     public AnimeViewModel(Application application) {
         super(application);
         mRepository = new AnimeRepository(application);
         mAllAnime = mRepository.getAllAnime();
+        testJSON = mRepository.getTestJSON();
     }
 
     public LiveData<List<Anime>> getAllAnime() {
@@ -29,6 +32,6 @@ public class AnimeViewModel extends AndroidViewModel {
         mRepository.delete(anime);
     }
 
-
+    public LiveData<List<Anime>> getTestJSON(){return this.testJSON;}
 }
 

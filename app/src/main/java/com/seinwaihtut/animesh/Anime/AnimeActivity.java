@@ -28,6 +28,8 @@ import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.DB.AnimeViewModel;
 import com.seinwaihtut.animesh.Network.NetworkUtils;
 import com.seinwaihtut.animesh.R;
+import com.seinwaihtut.animesh.SharedViewModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,7 +51,7 @@ public class AnimeActivity extends AppCompatActivity {
     private Button buttonSearch;
     ArrayList<ArrayList<String>> nyaaList;
     private ToggleButton fav;
-    private AnimeViewModel mAnimeViewModel;
+    private SharedViewModel mAnimeViewModel;
     Anime animeObject;
 
     @Override
@@ -58,7 +60,7 @@ public class AnimeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_anime);
 
         // Set up the AnimeViewModel.
-        mAnimeViewModel = new ViewModelProvider(this).get(AnimeViewModel.class);
+        mAnimeViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
 
         poster = findViewById(R.id.anime_poster);
         title = (TextView) findViewById(R.id.anime_title);
@@ -157,7 +159,7 @@ public class AnimeActivity extends AppCompatActivity {
                     setToggleButtonStatus(Integer.toString(animeObject.getMal_id()), true);
                 } else {
                     //Toggle is disabled
-                    mAnimeViewModel.deleteAnime(animeObject);
+                    mAnimeViewModel.delete(animeObject);
                     fav.setBackgroundDrawable(getDrawable(R.drawable.ic_fav_grey));
                     fav_tv.setText("Add to Watching");
 
