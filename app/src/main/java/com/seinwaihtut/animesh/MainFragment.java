@@ -3,20 +3,29 @@ package com.seinwaihtut.animesh;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.seinwaihtut.animesh.Airing.SeasonAdapter;
 import com.seinwaihtut.animesh.Airing.SeasonFragment;
 import com.seinwaihtut.animesh.Watching.WatchingAdapter;
@@ -34,6 +43,14 @@ public class MainFragment extends Fragment {
 
     SeasonFragment seasonFragment;
     WatchingFragment watchingFragment;
+
+    SeasonAdapter seasonAdapter;
+    WatchingAdapter watchingAdapter;
+
+    FirebaseUser user;
+
+    NavController navController;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
@@ -58,6 +75,9 @@ public class MainFragment extends Fragment {
                 (tab, position) -> tab.setText(tabLayoutTitles.get(position))
         ).attach();
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        navController = Navigation.findNavController(view);
     }
 
     private static final String ARG_PARAM1 = "param1";
@@ -97,8 +117,13 @@ public class MainFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        seasonAdapter = SeasonAdapter.getInstance();
+        watchingAdapter = WatchingAdapter.getInstance();
         switch (item.getItemId()) {
-            case R.id.app_bar_search:
+
+            case R.id.action_bar_search:
+                Log.i("MainFragment", "search");
                 SearchView searchView = (SearchView) item.getActionView();
                 searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -109,12 +134,31 @@ public class MainFragment extends Fragment {
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
+                        seasonAdapter.getFilter().filter(newText);
+                        watchingAdapter.getFilter().filter(newText);
                         return false;
                     }
                 });
+                return false;
+            case R.id.action_bar_logout:
+                Log.i("MainFragment", "logout");
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
+                    navController.popBackStack();
+                    navController.navigate(R.id.login_nested_graph);
+
+                return false;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.action_bar_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
     }
 
 }

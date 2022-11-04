@@ -16,14 +16,25 @@ import com.bumptech.glide.Glide;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHolder> implements Filterable {
 
-    private List<Anime> watchingList;
-    private List<Anime> watchingListFull;
+    private List<Anime> watchingList = new ArrayList<>();
+    private List<Anime> watchingListFull = new ArrayList<>();
     private static ClickListener clickListener;
+
+    private static WatchingAdapter instance = null;
+
+    public static WatchingAdapter getInstance(){
+        if (instance == null){
+            instance = new WatchingAdapter();
+        }
+        return instance;
+    }
 
     public Anime getAnimeAtPosition(int position) {
         return watchingList.get(position);
@@ -33,7 +44,7 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
     @NonNull
     @Override
     public WatchingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_anime_preview_constraint_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_preview_watching, parent, false);
         return new ViewHolder(view);
     }
 
@@ -41,12 +52,15 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
     public void onBindViewHolder(@NonNull WatchingAdapter.ViewHolder holder, int position) {
         if (watchingList != null) {
             Anime current = watchingList.get(position);
+            ImageView imageView = holder.getPoster();
+            Glide.with(imageView).load(current.getImage_url()).placeholder(R.drawable.placeholder).into(imageView);
+            holder.getTitle().setText(current.getTitle());
+            holder.getAired_string().setText("Aired From: "+ current.getAired_string());
+            holder.getType().setText("Type: "+current.getType());
+            holder.getSource().setText("Type: "+current.getSource());
+            holder.getBroadcast().setText(current.getBroadcast_string());
+            holder.getGenres().setText(current.getGenres());
 
-            holder.title.setText(current.getTitle());
-            Log.i("WatchingAdapter:title", current.getTitle());
-
-            ImageView imageView = holder.poster;
-            Glide.with(imageView).load(current.getImage_url()).placeholder(R.drawable.placeholder).override(337, 477).into(imageView);
 
         } else {
             holder.title.setText("id");
@@ -101,17 +115,23 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView title;
-        private final TextView score;
-        private final TextView day_time;
         private final ImageView poster;
+        private final TextView aired_string;
+        private final TextView type;
+        private final TextView source;
+        private final TextView broadcast;
+        private final TextView genres;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            score = itemView.findViewById(R.id.anime_preview_score);
-            title = itemView.findViewById(R.id.anime_preview_title);
-            day_time = itemView.findViewById(R.id.anime_preview_day_time);
-            poster = itemView.findViewById(R.id.anime_preview_poster);
-
+            poster = itemView.findViewById(R.id.iv_item_preview_watching_image);
+            title = itemView.findViewById(R.id.tv_item_preview_watching_title);
+            aired_string = itemView.findViewById(R.id.tv_item_preview_watching_aired_string);
+            type = itemView.findViewById(R.id.tv_item_preview_watching_type);
+            source = itemView.findViewById(R.id.tv_item_preview_watching_source);
+            broadcast = itemView.findViewById(R.id.tv_item_preview_watching_broadcast_string);
+            genres = itemView.findViewById(R.id.tv_item_preview_watching_genres);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -122,6 +142,34 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
                     }
                 }
             });
+        }
+
+        public TextView getTitle() {
+            return title;
+        }
+
+        public ImageView getPoster() {
+            return poster;
+        }
+
+        public TextView getAired_string() {
+            return aired_string;
+        }
+
+        public TextView getType() {
+            return type;
+        }
+
+        public TextView getSource() {
+            return source;
+        }
+
+        public TextView getBroadcast() {
+            return broadcast;
+        }
+
+        public TextView getGenres() {
+            return genres;
         }
     }
 

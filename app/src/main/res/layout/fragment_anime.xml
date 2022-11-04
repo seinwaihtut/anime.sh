@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Anime.AnimeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_fragment_anime_image"
+            android:layout_width="210dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_fragment_anime_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:text="Title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_fragment_anime_image"
+            app:layout_constraintTop_toTopOf="@+id/iv_fragment_anime_image" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/fragment_anime_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="iv_fragment_anime_image, tv_anime_fragment_genres"
+            tools:layout_editor_absoluteY="308dp" />
+
+        <ToggleButton
+            android:id="@+id/anime_fragment_fav_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_fav_grey"
+            android:textSize="0sp"
+            app:layout_constraintEnd_toStartOf="@+id/anime_fragment_open_mal_button"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_anime_barrier" />
+
+        <TextView
+            android:id="@+id/tv_fragment_anime_synopsis"
+            android:layout_width="395dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Synopsis"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_fav_text" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_anime_fragment_episodes_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_synopsis"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_synopsis"
+            app:layout_constraintTop_toBottomOf="@+id/et_anime_fragment_anime_search"
+            tools:listitem="@layout/item_episode" />
+
+        <EditText
+            android:id="@+id/et_anime_fragment_anime_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toStartOf="@+id/bt_anime_fragment_search_button"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_synopsis"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fragment_anime_synopsis" />
+
+        <Button
+            android:id="@+id/bt_anime_fragment_search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/et_anime_fragment_anime_search"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_synopsis" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_fav_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add to Watching"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/anime_fragment_fav_button"
+            app:layout_constraintStart_toStartOf="@+id/anime_fragment_fav_button"
+            app:layout_constraintTop_toBottomOf="@+id/anime_fragment_fav_button" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_open_mal_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open MAL"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_anime_fragment_fav_text"
+            app:layout_constraintEnd_toEndOf="@+id/anime_fragment_open_mal_button"
+            app:layout_constraintStart_toStartOf="@+id/anime_fragment_open_mal_button" />
+
+        <ImageButton
+            android:id="@+id/anime_fragment_open_mal_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_mal_grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/anime_fragment_fav_button"
+            app:layout_constraintTop_toTopOf="@+id/anime_fragment_fav_button" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Type"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_anime_fragment_source"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/iv_fragment_anime_image"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fragment_anime_jp_title" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_source"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Source"
+            android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_anime_fragment_type"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_anime_fragment_type" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_episodes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Episodes"
+            android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_anime_fragment_score"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_anime_fragment_score" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_score"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Score"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_anime_fragment_episodes"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/iv_fragment_anime_image"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_type" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_aired_string"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Aired_string"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_season" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_season"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Season"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_score" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_broadcast"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Broadcast"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_aired_string" />
+
+        <TextView
+            android:id="@+id/tv_anime_fragment_genres"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="genres"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_anime_fragment_broadcast" />
+
+        <TextView
+            android:id="@+id/tv_fragment_anime_jp_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Japanese Title: "
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_fragment_anime_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fragment_anime_title" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

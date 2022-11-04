@@ -1,10 +1,14 @@
 package com.seinwaihtut.animesh.DB;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "anime_table")
-public class Anime {
+public class Anime implements Parcelable {
     @PrimaryKey
     private Integer mal_id;
 
@@ -26,7 +30,7 @@ public class Anime {
 
     private String aired_string; //optional 	"Oct 12, 2022 to ?"
 
-    private Integer score; //optional
+    private Float score = Float.valueOf(0); //optional
 
     private String synopsis; //optional
 
@@ -37,6 +41,53 @@ public class Anime {
     private String broadcast_string; //optional e.g. "Wednesdays at 00:00 (JST)"
 
     private String genres; //optional
+
+    protected Anime(Parcel in) {
+        if (in.readByte() == 0) {
+            mal_id = null;
+        } else {
+            mal_id = in.readInt();
+        }
+        mal_url = in.readString();
+        image_url = in.readString();
+        title = in.readString();
+        title_en = in.readString();
+        title_jp = in.readString();
+        type = in.readString();
+        source = in.readString();
+        if (in.readByte() == 0) {
+            episodes = null;
+        } else {
+            episodes = in.readInt();
+        }
+        aired_string = in.readString();
+        if (in.readByte() == 0) {
+            score = null;
+        } else {
+            score = in.readFloat();
+        }
+        synopsis = in.readString();
+        season = in.readString();
+        if (in.readByte() == 0) {
+            year = null;
+        } else {
+            year = in.readInt();
+        }
+        broadcast_string = in.readString();
+        genres = in.readString();
+    }
+
+    public static final Creator<Anime> CREATOR = new Creator<Anime>() {
+        @Override
+        public Anime createFromParcel(Parcel in) {
+            return new Anime(in);
+        }
+
+        @Override
+        public Anime[] newArray(int size) {
+            return new Anime[size];
+        }
+    };
 
     public Integer getMal_id() {
         return mal_id;
@@ -118,11 +169,11 @@ public class Anime {
         this.aired_string = aired_string;
     }
 
-    public Integer getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 
@@ -171,5 +222,50 @@ public class Anime {
         this.mal_url = mal_url;
         this.image_url = image_url;
         this.title = title;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (mal_id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(mal_id);
+        }
+        dest.writeString(mal_url);
+        dest.writeString(image_url);
+        dest.writeString(title);
+        dest.writeString(title_en);
+        dest.writeString(title_jp);
+        dest.writeString(type);
+        dest.writeString(source);
+        if (episodes == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(episodes);
+        }
+        dest.writeString(aired_string);
+        if (score == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeFloat(score);
+        }
+        dest.writeString(synopsis);
+        dest.writeString(season);
+        if (year == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(year);
+        }
+        dest.writeString(broadcast_string);
+        dest.writeString(genres);
     }
 }

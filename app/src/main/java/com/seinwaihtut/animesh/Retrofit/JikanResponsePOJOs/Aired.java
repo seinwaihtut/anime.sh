@@ -18,6 +18,9 @@ public class Aired {
     @SerializedName("prop")
     @Expose
     private Prop prop;
+    @SerializedName("string")
+    @Expose
+    private String string;
 
     /**
      * No args constructor for use in serialization
@@ -32,11 +35,20 @@ public class Aired {
      * @param from
      * @param to
      */
-    public Aired(String from, String to, Prop prop) {
+    public Aired(String from, String to, Prop prop, String string) {
         super();
         this.from = from;
         this.to = to;
         this.prop = prop;
+        this.string = string;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
     }
 
     public String getFrom() {

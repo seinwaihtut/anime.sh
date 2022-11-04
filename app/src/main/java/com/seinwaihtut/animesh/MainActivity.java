@@ -1,20 +1,25 @@
 package com.seinwaihtut.animesh;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.seinwaihtut.animesh.LogIn.LogInMainFragment;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+    NavController navController;
+    Toolbar toolbar;
+    private FirebaseUser user;
 
     @Override
     protected void onStart() {
@@ -27,26 +32,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null){
-            displayMainFragment();
-        }else{
-            displayLogInFragment();
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
+        navController = navHostFragment.getNavController();
+
+        Set<Integer> topLevelDestinations = new HashSet<>();
+        topLevelDestinations.add(R.id.mainFragment);
+        topLevelDestinations.add(R.id.logInMainFragment);
+
+        // AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
+
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user==null){
+            navController.popBackStack();
+            navController.navigate(R.id.login_nested_graph);
+
         }
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
     }
-    private void displayMainFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        MainFragment fragment = new MainFragment();
-        fragmentTransaction.replace(R.id.main_activity_fragment_container, fragment);
-        fragmentTransaction.commit();
-    }
-    private void displayLogInFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        LogInMainFragment logInFragment = LogInMainFragment.newInstance();
-        fragmentTransaction.replace(R.id.main_activity_fragment_container, logInFragment);
-        fragmentTransaction.commit();
-    }
+
 
 }

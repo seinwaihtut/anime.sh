@@ -10,5 +10,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fav_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_preview_watching"
+        />
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

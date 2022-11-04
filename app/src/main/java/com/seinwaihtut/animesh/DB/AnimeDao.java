@@ -27,4 +27,7 @@ public interface AnimeDao {
     @Query("SELECT * FROM anime_table")
     LiveData<List<Anime>> getFavAnime();
 
+    @Query("SELECT * FROM anime_table where anime_table.mal_id = :mal_id")
+    LiveData<Anime> getAnime(Integer mal_id);
+
 }

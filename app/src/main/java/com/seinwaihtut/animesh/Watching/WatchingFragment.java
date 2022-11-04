@@ -4,18 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -23,13 +21,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.seinwaihtut.animesh.Airing.SeasonAdapter;
 import com.seinwaihtut.animesh.Anime.AnimeActivity;
 import com.seinwaihtut.animesh.DB.Anime;
+import com.seinwaihtut.animesh.MainFragmentDirections;
 import com.seinwaihtut.animesh.R;
 import com.seinwaihtut.animesh.SharedViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WatchingFragment extends Fragment {
+
+    NavController navController;
 
     private SharedViewModel sharedViewModel;
     private WatchingAdapter adapter;
@@ -54,12 +54,13 @@ public class WatchingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_container);
         swipeRefreshLayout = view.findViewById(R.id.watching_swipe_refresh_layout);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fav_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new WatchingAdapter();
+        adapter = WatchingAdapter.getInstance();
         recyclerView.setAdapter(adapter);
 
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
@@ -73,14 +74,15 @@ public class WatchingFragment extends Fragment {
         adapter.setOnItemClickListener(new WatchingAdapter.ClickListener() {
             @Override
             public void onItemClick(Anime anime) {
-                launchAnimeActivity(anime);
+                navController.navigate(MainFragmentDirections.actionMainFragmentToAnimeFragment(anime));
+
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                sharedViewModel.getTestJSON().observe(getViewLifecycleOwner(), new Observer<List<Anime>>() {
+                sharedViewModel.getCurrentSeason().observe(getViewLifecycleOwner(), new Observer<List<Anime>>() {
                     @Override
                     public void onChanged(List<Anime> networkList) {
                         SeasonAdapter seasonAdapter = SeasonAdapter.getInstance();
@@ -140,7 +142,6 @@ public class WatchingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -148,37 +149,6 @@ public class WatchingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_watching, container, false);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.watching_search:
-                SearchView searchView = (SearchView) item.getActionView();
-                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        adapter.getFilter().filter(newText);
-                        return false;
-                    }
-                });
-
-
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.watching_action_bar, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
 

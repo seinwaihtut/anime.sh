@@ -8,27 +8,16 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.seinwaihtut.animesh.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LogInMainFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class LogInMainFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public LogInMainFragment() {
         // Required empty public constructor
@@ -45,34 +34,32 @@ public class LogInMainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_container);
+
+
         Button loginButton = view.findViewById(R.id.login_main_login_button);
         Button signUpButton = view.findViewById(R.id.login_main_sign_up_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                LogInFragment logInFragment = new LogInFragment();
-                fragmentTransaction.add(R.id.main_activity_fragment_container, logInFragment).addToBackStack("").setReorderingAllowed(true);
-                fragmentTransaction.commit();
+                navController.navigate(LogInMainFragmentDirections.actionLogInMainFragmentToLogInFragment());
+
             }
         });
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                SignUpFragment signUpFragment = new SignUpFragment();
-                fragmentTransaction.add(R.id.main_activity_fragment_container, signUpFragment).addToBackStack("").setReorderingAllowed(true);
-                fragmentTransaction.commit();
+                navController.navigate((LogInMainFragmentDirections.actionLogInMainFragmentToSignUpFragment()));
             }
         });
     }

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp">
+
+    <ImageView
+        android:id="@+id/iv_item_preview_watching_image"
+        android:layout_width="140dp"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/placeholder"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="Title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_item_preview_watching_image"
+        app:layout_constraintTop_toTopOf="@+id/iv_item_preview_watching_image" />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_aired_string"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="aired_string"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_preview_watching_title" />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_broadcast_string"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="broadcast_string"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_preview_watching_type" />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_genres"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:lines="3"
+        android:text="genres"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_preview_watching_broadcast_string" />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_source"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Source"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_item_preview_watching_type"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tv_item_preview_watching_type" />
+
+    <TextView
+        android:id="@+id/tv_item_preview_watching_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Type"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_item_preview_watching_source"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv_item_preview_watching_image"
+        app:layout_constraintStart_toStartOf="@+id/tv_item_preview_watching_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_preview_watching_aired_string" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/iv_item_preview_watching_image"
+        tools:layout_editor_absoluteX="8dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

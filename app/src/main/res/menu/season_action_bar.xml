@@ -8,4 +8,8 @@
         android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
+    <item android:title="Logout"
+        android:id="@+id/season_logout"
+        app:showAsAction="never"
+        />
 </menu>

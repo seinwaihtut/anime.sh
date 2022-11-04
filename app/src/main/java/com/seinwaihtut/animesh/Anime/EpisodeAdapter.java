@@ -10,13 +10,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.seinwaihtut.animesh.DB.EpisodePOJO;
 import com.seinwaihtut.animesh.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHolder> {
-    private ArrayList<ArrayList<String>> localEpisodeList;
+    private List<EpisodePOJO> adapterEpisodes = new ArrayList<>();
     private static ClickListener clickListener;
+    private static EpisodeAdapter instance = null;
+
+    public static EpisodeAdapter getInstance(){
+        if (instance==null){
+            instance = new EpisodeAdapter();
+        }
+        return instance;
+    }
+    public EpisodePOJO getItemAtPosition(Integer position){
+        return adapterEpisodes.get(position);
+    }
 
     @NonNull
     @Override
@@ -27,17 +40,16 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull EpisodeAdapter.ViewHolder holder, int position) {
-            holder.getUpload_name().setText(localEpisodeList.get(position).get(0));
-            holder.getSize().setText(localEpisodeList.get(position).get(2));
-            holder.getUpload_date().setText(localEpisodeList.get(position).get(3));
-            holder.getSeeders().setText(localEpisodeList.get(position).get(4));
-            holder.getLeechers().setText(localEpisodeList.get(position).get(5));
-
+        holder.getUpload_name().setText(adapterEpisodes.get(position).getUpload_title());
+        holder.getSize().setText(adapterEpisodes.get(position).getSize());
+        holder.getUpload_date().setText(adapterEpisodes.get(position).getUpload_time());
+        holder.getSeeders().setText(adapterEpisodes.get(position).getSeeders().toString());
+        holder.getLeechers().setText(adapterEpisodes.get(position).getLeechers().toString());
     }
 
     @Override
     public int getItemCount() {
-        return localEpisodeList.size();
+        return adapterEpisodes.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,7 +75,10 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
             });
 
         }
-        public TextView getUpload_name(){return upload_name;}
+
+        public TextView getUpload_name() {
+            return upload_name;
+        }
 
         public TextView getUpload_date() {
             return upload_date;
@@ -82,9 +97,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         }
     }
 
-    public EpisodeAdapter(ArrayList<ArrayList<String>> episodeList){
-        localEpisodeList = episodeList;
+    public void setData(List<EpisodePOJO> episodes) {
+        adapterEpisodes = episodes;
+        notifyDataSetChanged();
     }
+
+    public EpisodeAdapter() {
+    }
+
     public void setOnItemClickListener(EpisodeAdapter.ClickListener clickListener) {
         EpisodeAdapter.clickListener = clickListener;
     }
@@ -92,9 +112,8 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     public interface ClickListener {
         void onItemClick(View v, int position);
     }
-    public void openMagnet(String url) {
-        Uri magnet = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, magnet);
-        
-    }
+
+
+
+
 }

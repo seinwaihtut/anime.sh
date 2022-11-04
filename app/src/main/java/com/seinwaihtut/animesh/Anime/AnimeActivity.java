@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.seinwaihtut.animesh.DB.Anime;
-import com.seinwaihtut.animesh.DB.AnimeViewModel;
 import com.seinwaihtut.animesh.Network.NetworkUtils;
 import com.seinwaihtut.animesh.R;
 import com.seinwaihtut.animesh.SharedViewModel;
@@ -80,7 +79,7 @@ public class AnimeActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.anime_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
-        EpisodeAdapter adapter = new EpisodeAdapter(nyaaList);
+        EpisodeAdapter adapter = new EpisodeAdapter();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
@@ -193,7 +192,6 @@ public class AnimeActivity extends AppCompatActivity {
     private String readSharedPrefs(String file_name, String mal_id) {
         SharedPreferences sharedPreferences = getSharedPreferences(file_name, Context.MODE_PRIVATE);
         String searchTerm = sharedPreferences.getString(mal_id, "");
-
         return searchTerm;
     }
 
@@ -207,7 +205,6 @@ public class AnimeActivity extends AppCompatActivity {
     }
 
     public String buildJikanAnimeQueryString(String id) {
-        //return "https://api.jikan.moe/v3/anime/" + id;
         return "https://api.jikan.moe/v4/anime/" + id; // 5/7/2022 updated for jikan api v4
     }
 
