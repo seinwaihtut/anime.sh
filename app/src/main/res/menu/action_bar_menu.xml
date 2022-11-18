@@ -9,6 +9,11 @@
         app:showAsAction="collapseActionView|always" />
 
     <item
+        android:id="@+id/action_bar_document_tree"
+        android:title="Select Download Directory"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/action_bar_logout"
         android:title="Logout"
         app:showAsAction="never" />

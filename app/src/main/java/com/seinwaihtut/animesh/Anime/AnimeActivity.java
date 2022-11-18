@@ -104,7 +104,6 @@ public class AnimeActivity extends AppCompatActivity {
 
             editTextSearch.setText(animeObject.getTitle());
         }
-
         if (!(readSharedPrefs("Search_terms", Integer.toString(animeObject.getMal_id())).isEmpty())) {
             editTextSearch.setText(readSharedPrefs("Search_terms", Integer.toString(animeObject.getMal_id())));
         }

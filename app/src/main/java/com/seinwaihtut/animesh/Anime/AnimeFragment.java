@@ -1,12 +1,17 @@
 package com.seinwaihtut.animesh.Anime;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.UriPermission;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,11 +20,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,6 +37,7 @@ import com.bumptech.glide.Glide;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.DB.EpisodePOJO;
 import com.seinwaihtut.animesh.R;
+import com.seinwaihtut.animesh.Retrofit.JikanResponsePOJOs.To;
 import com.seinwaihtut.animesh.SharedViewModel;
 
 import org.jsoup.Jsoup;
@@ -37,11 +45,21 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class AnimeFragment extends Fragment {
+    private static final String LOG_TAG = "ANIME_FRAGMENT";
+    EpisodeAdapter adapter;
     ImageView poster;
     TextView titleTV;
     TextView synopsisTV;
@@ -85,8 +103,7 @@ public class AnimeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_anime, container, false);
     }
@@ -121,42 +138,43 @@ public class AnimeFragment extends Fragment {
         jpTitle.setText(anime.getTitle_jp());
         type.setText(anime.getType());
         source.setText(anime.getSource());
-        score.setText("Score: "+anime.getScore().toString());
-        episodes.setText("Episodes: "+anime.getEpisodes().toString());
-        if(anime.getSeason().isEmpty()||anime.getYear().equals(0)){
+        score.setText("Score: " + anime.getScore().toString());
+        episodes.setText("Episodes: " + anime.getEpisodes().toString());
+        if (anime.getSeason().isEmpty() || anime.getYear().equals(0)) {
 
-        }else{
-            season.setText("Season: "+anime.getSeason()+" "+anime.getYear().toString());
+        } else {
+            season.setText("Season: " + anime.getSeason() + " " + anime.getYear().toString());
         }
-        aired_string.setText("Aired From: "+anime.getAired_string());
+        aired_string.setText("Aired From: " + anime.getAired_string());
         broadcast.setText(anime.getBroadcast_string());
-        genres.setText("Genres: "+anime.getGenres());
+        genres.setText("Genres: " + anime.getGenres());
 
         //Fav button initial state
         sharedViewModel.queryAnimeInDB(anime.getMal_id()).observe(getViewLifecycleOwner(), new Observer<Anime>() {
             @Override
             public void onChanged(Anime a) {
-                if (a!=null){
-                if (anime.getMal_id().equals(a.getMal_id())){
-                    favToggleButton.setChecked(true);
-                    favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
-                    favTextView.setText("In Watching");
-                }else{
-                    favToggleButton.setChecked(false);
-                    favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
-                    favTextView.setText("Add to Watching");
+                if (a != null) {
+                    if (anime.getMal_id().equals(a.getMal_id())) {
+                        favToggleButton.setChecked(true);
+                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
+                        favTextView.setText("In Watching");
+                    } else {
+                        favToggleButton.setChecked(false);
+                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
+                        favTextView.setText("Add to Watching");
+                    }
                 }
-            }}
+            }
         });
 
         favToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     sharedViewModel.insert(anime);
                     favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
                     favTextView.setText("In Watching");
-                }else{
+                } else {
                     sharedViewModel.delete(anime);
                     favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
                     favTextView.setText("Add to Watching");
@@ -167,8 +185,10 @@ public class AnimeFragment extends Fragment {
         malImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!(anime.getMal_url().isEmpty())){
+                if (!(anime.getMal_url().isEmpty())) {
                     openMAL(anime.getMal_url());
+
+
                 }
             }
         });
@@ -180,19 +200,36 @@ public class AnimeFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.rv_anime_fragment_episodes_recycler_view);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
-        EpisodeAdapter adapter = EpisodeAdapter.getInstance();
+        adapter = EpisodeAdapter.getInstance();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new EpisodeAdapter.ClickListener() {
             @Override
             public void onItemClick(View v, int position) {
                 openMagnet(adapter.getItemAtPosition(position).getMagnet_url());
+
+//                String download_uri = getActivity().getSharedPreferences("URIPermissions", Context.MODE_PRIVATE)
+//                        .getString("download_uri", "-1");
+//                Log.i(LOG_TAG, download_uri);
+//
+//                if (download_uri.equals("-1")) {
+//                    Toast.makeText(getActivity(), "Select download directory.", Toast.LENGTH_SHORT);
+//
+//                } else {
+//                    Boolean permissionGranted = checkForPermission(download_uri);
+//                    Log.i(LOG_TAG, permissionGranted.toString());
+//                    if (permissionGranted) {
+//                        downloadTorrentFile(Uri.parse(download_uri), adapter.getItemAtPosition(position));
+//                    } else {
+//                        Toast.makeText(getActivity(), "Check permission", Toast.LENGTH_SHORT);
+//                    }
+//                }
             }
         });
 
 
         searchEditText.setText(anime.getTitle());
-        if (checkSharedPrefs(SHARED_PREFS_EPISODES_FILE,anime.getMal_id().toString())){
+        if (checkSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString())) {
             //When shared prefs is not empty, when user already used search
             searchEditText.setText(readSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString()));
         }
@@ -209,37 +246,36 @@ public class AnimeFragment extends Fragment {
     }
 
 
-
-    private void openMagnet(String url){
+    private void openMagnet(String url) {
         Uri magnet = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, magnet);
-        if (intent.resolveActivity(getActivity().getPackageManager())!=null){
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(intent);
         }
     }
 
-    private void openMAL(String url){
+    private void openMAL(String url) {
         Uri mal_url = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, mal_url);
-        if (intent.resolveActivity(getContext().getPackageManager())!=null){
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivity(intent);
         }
     }
 
-    private void editSharedPrefs(String file_name, String mal_id, String search_string){
+    private void editSharedPrefs(String file_name, String mal_id, String search_string) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(file_name, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(mal_id, search_string);
         editor.apply();
     }
 
-    private String readSharedPrefs(String file_name, String mal_id){
+    private String readSharedPrefs(String file_name, String mal_id) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(file_name, Context.MODE_PRIVATE);
         String search_string = sharedPreferences.getString(mal_id, "");
         return search_string;
     }
 
-    private Boolean checkSharedPrefs(String file_name, String mal_id){
+    private Boolean checkSharedPrefs(String file_name, String mal_id) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(file_name, Context.MODE_PRIVATE);
         return sharedPreferences.contains(mal_id);
     }
@@ -247,6 +283,7 @@ public class AnimeFragment extends Fragment {
 
     private static class NyaaAsyncTask extends AsyncTask<String, Void, List<EpisodePOJO>> {
         String NYAA_BASE_URL = "https://nyaa.si/"; //"https://nyaa.si/?f=0&c=1_2&q=yourself"
+
         private NyaaAsyncTask() {
         }
 
@@ -254,12 +291,7 @@ public class AnimeFragment extends Fragment {
         protected List<EpisodePOJO> doInBackground(String... s) {
             List<EpisodePOJO> episodeList = new ArrayList<>();
             //String search_string = s[0].replace(" ", "+");
-            Uri uri = Uri.parse(NYAA_BASE_URL)
-                    .buildUpon()
-                    .appendQueryParameter("f", "0")
-                    .appendQueryParameter("c", "1_2")
-                    .appendQueryParameter("q", s[0])
-                    .appendQueryParameter("p", "1").build();
+            Uri uri = Uri.parse(NYAA_BASE_URL).buildUpon().appendQueryParameter("f", "0").appendQueryParameter("c", "1_2").appendQueryParameter("q", s[0]).appendQueryParameter("p", "1").build();
 
             String url = uri.toString();
             try {
@@ -304,4 +336,83 @@ public class AnimeFragment extends Fragment {
             super.onProgressUpdate(values);
         }
     }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case 3001: {
+                Toast.makeText(getContext(), "3001", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            case 3002: {
+                Toast.makeText(getContext(), "3002", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            case 3003: {
+
+
+                String download_uri = getActivity().getSharedPreferences("URIPermissions", Context.MODE_PRIVATE).getString("download_uri", "-1");
+                Log.i(LOG_TAG, download_uri);
+
+                if (download_uri.equals("-1")) {
+                    Toast.makeText(getActivity(), "Select download directory.", Toast.LENGTH_SHORT);
+
+                } else {
+                    Boolean permissionGranted = checkForPermission(download_uri);
+                    Log.i(LOG_TAG, permissionGranted.toString());
+                    if (permissionGranted) {
+                        downloadTorrentFile(Uri.parse(download_uri), adapter.getItemAtPosition(item.getGroupId()));
+                    } else {
+                        Toast.makeText(getActivity(), "Check permission", Toast.LENGTH_SHORT);
+                    }
+                }
+
+
+                return true;
+            }
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+
+    private void downloadTorrentFile(Uri download_uri, EpisodePOJO episode) {
+
+        String BASE_URL = "https://nyaa.si";
+        String torrentURLString = BASE_URL + episode.getTorrent_url();
+        String fileName = episode.getUpload_title() + " " + System.currentTimeMillis() + ".torrent";
+
+        Log.i(LOG_TAG, torrentURLString);
+        Log.i(LOG_TAG, download_uri.toString());
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(torrentURLString).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                byte[] res = response.body().bytes();
+                DocumentFile file = DocumentFile.fromTreeUri(getContext(), download_uri).createFile("*/*", fileName);
+                if (file != null) {
+                    FileDescriptor fileDescriptor = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w").getFileDescriptor();
+                    new FileOutputStream(fileDescriptor).write(res);
+                }
+            }
+        });
+    }
+
+    private Boolean checkForPermission(String uriString) {
+        List<UriPermission> permissions = getContext().getContentResolver().getPersistedUriPermissions();
+        Log.i(LOG_TAG, permissions.toString());
+        for (UriPermission permission : permissions) {
+            if (uriString.equals(permission.getUri().toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

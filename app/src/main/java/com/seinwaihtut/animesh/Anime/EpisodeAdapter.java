@@ -2,12 +2,14 @@ package com.seinwaihtut.animesh.Anime;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.seinwaihtut.animesh.DB.EpisodePOJO;
@@ -52,12 +54,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         return adapterEpisodes.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         private final TextView upload_name;
         private final TextView upload_date;
         private final TextView size;
         private final TextView seeders;
         private final TextView leechers;
+        private final CardView episode_card_view;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +69,8 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
             size = itemView.findViewById(R.id.episode_size);
             seeders = itemView.findViewById(R.id.episode_seeders);
             leechers = itemView.findViewById(R.id.episode_leechers);
+            episode_card_view = itemView.findViewById(R.id.episode_card_view);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -73,6 +78,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
                     clickListener.onItemClick(v, getAdapterPosition());
                 }
             });
+            episode_card_view.setOnCreateContextMenuListener(this);
 
         }
 
@@ -94,6 +100,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
         public TextView getLeechers() {
             return leechers;
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            //menu.setHeaderTitle("Choose"); //Set title for floating context menu
+            menu.add(getAdapterPosition(), 3001, 0, "Open in a Web Browser");
+            menu.add(getAdapterPosition(), 3002, 1, "Open Magnet Link");
+            menu.add(getAdapterPosition(), 3003, 2, "Download Torrent File");
         }
     }
 
