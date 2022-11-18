@@ -88,12 +88,6 @@ public class MainFragment extends Fragment {
         navController = Navigation.findNavController(view);
     }
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     public MainFragment() {
         // Required empty public constructor
     }
@@ -101,8 +95,7 @@ public class MainFragment extends Fragment {
     public static MainFragment newInstance(String param1, String param2) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,8 +104,7 @@ public class MainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
         setHasOptionsMenu(true);
     }
@@ -150,7 +142,9 @@ public class MainFragment extends Fragment {
                 return false;
 
             case R.id.action_bar_document_tree:{
-                openDocumentTree();
+                askPermission();
+
+                //openDocumentTree();
                 return true;
             }
             case R.id.action_bar_logout:
@@ -193,20 +187,10 @@ public class MainFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("download_uri", data.getDataString());
             editor.apply();
+            Log.i("MainFragment", "request:ok");
         }
 
     }
-//
-//    private Boolean checkForPermission(String uriString) {
-//        List<UriPermission> permissions = getContext().getContentResolver().getPersistedUriPermissions();
-//        for (UriPermission permission : permissions) {
-//            if (uriString.equals(permission.toString())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
 
     private void openDocumentTree() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("URIPermissions", Context.MODE_PRIVATE);

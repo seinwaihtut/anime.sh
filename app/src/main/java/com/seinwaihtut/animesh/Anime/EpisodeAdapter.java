@@ -126,8 +126,4 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     public interface ClickListener {
         void onItemClick(View v, int position);
     }
-
-
-
-
 }

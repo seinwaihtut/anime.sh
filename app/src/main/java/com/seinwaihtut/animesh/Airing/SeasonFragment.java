@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.seinwaihtut.animesh.Anime.AnimeActivity;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.MainFragmentDirections;
 import com.seinwaihtut.animesh.R;
@@ -39,10 +38,6 @@ public class SeasonFragment extends Fragment {
     SeasonAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     NavController navController;
-
-    public SeasonAdapter getAdapter() {
-        return adapter;
-    }
 
     public SeasonFragment() {
     }

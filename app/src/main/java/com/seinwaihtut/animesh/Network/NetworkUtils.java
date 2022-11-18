@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
+//NetworkUtils class unused as of 18 Nov 2022 but left as is for future reference.
 
 public class NetworkUtils {
     static public String get(String url, Boolean season){

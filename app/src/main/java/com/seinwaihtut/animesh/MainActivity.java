@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.mainFragment);
         topLevelDestinations.add(R.id.logInMainFragment);
 
-        // AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
 
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
@@ -53,8 +52,5 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(R.id.login_nested_graph);
 
         }
-        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
     }
-
-
 }

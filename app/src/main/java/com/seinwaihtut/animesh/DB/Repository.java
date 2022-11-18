@@ -1,5 +1,5 @@
 package com.seinwaihtut.animesh.DB;
-
+// TODO Remove redundant and unused codes
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -62,7 +62,6 @@ public class Repository {
 
     public void update(Anime anime) {
         new UpdateAnimeAsyncTask(animeDao).execute(anime);
-        //updateExecutor(animeDao, anime);
     }
 
     private static class UpdateAnimeAsyncTask extends AsyncTask<Anime, Void, Void> {
@@ -153,16 +152,7 @@ public class Repository {
                     Integer seeders = Integer.valueOf(row.select("td:nth-of-type(6)").text());
                     Integer leechers = Integer.valueOf(row.select("td:nth-of-type(7").text());
                     Integer completed_downloads = Integer.valueOf(row.select("td:nth-of-type(8)").text());
-//                    Log.i("Repository:row:nyaa_url", nyaa_url);
-//                    Log.i("Repository:row:title", title);
-//                    Log.i("Repository:row:torrent_url", torrent_url);
-//                    Log.i("Repository:row:magnet", magnet_url);
-//                    Log.i("Repository:time", upload_time);
-//                    Log.i("Repository:size", size);
-//                    Log.i("Repository:seeders", Integer.toString(seeders));
-//                    Log.i("Repository:leechers", Integer.toString(leechers));
-//                    Log.i("Repository:downloads", Integer.toString(completed_downloads));
-//                    Log.i("Repository:row:row", "---------------");
+
                     EpisodePOJO episodePOJO = new EpisodePOJO(title, magnet_url);
                     episodePOJO.setNyaa_url(nyaa_url);
                     episodePOJO.setTorrent_url(torrent_url);
@@ -274,6 +264,8 @@ public class Repository {
         return currentSeason;
     }
 
+
+
 //
 //    public MutableLiveData<List<Anime>> getTestJSON() {
 //        MutableLiveData<List<Anime>> testJSON = new MutableLiveData<>();
@@ -352,17 +344,11 @@ public class Repository {
             @Override
             public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
                 if (response.isSuccessful()) {
-
-
                     Log.i("Repository", response.body().string());
-
-
                 }
             }
         });
 
     }
-
-
 }
 

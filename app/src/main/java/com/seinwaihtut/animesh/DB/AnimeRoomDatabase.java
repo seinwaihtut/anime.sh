@@ -19,7 +19,6 @@ public abstract class AnimeRoomDatabase extends RoomDatabase {
                     AnimeRoomDatabase.class, "anime_room_database"
             ).fallbackToDestructiveMigration().build();
         }
-
         return instance;
     }
 }

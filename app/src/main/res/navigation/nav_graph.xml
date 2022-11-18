@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/animeFragment"
         android:name="com.seinwaihtut.animesh.Anime.AnimeFragment"
-        android:label="fragment_anime"
-        tools:layout="@layout/fragment_anime" >
+        android:label="Anime.sh"
+        tools:layout="@layout/fragment_anime">
 
         <argument
             android:name="anime_parcelable"
@@ -18,11 +18,11 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.seinwaihtut.animesh.MainFragment"
-        android:label="fragment_main"
+        android:label="Anime.sh"
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_animeFragment"
-            app:destination="@id/animeFragment" >
+            app:destination="@id/animeFragment">
 
         </action>
     </fragment>
@@ -32,7 +32,7 @@
         <fragment
             android:id="@+id/logInMainFragment"
             android:name="com.seinwaihtut.animesh.LogIn.LogInMainFragment"
-            android:label="fragment_log_in_main"
+            android:label="Anime.sh"
             tools:layout="@layout/fragment_log_in_main">
             <action
                 android:id="@+id/action_logInMainFragment_to_logInFragment"
@@ -46,7 +46,7 @@
         <fragment
             android:id="@+id/logInFragment"
             android:name="com.seinwaihtut.animesh.LogIn.LogInFragment"
-            android:label="fragment_log_in"
+            android:label="LogIn"
             tools:layout="@layout/fragment_log_in">
             <action
                 android:id="@+id/action_logInFragment_to_mainFragment2"
@@ -58,7 +58,7 @@
         <fragment
             android:id="@+id/signUpFragment"
             android:name="com.seinwaihtut.animesh.LogIn.SignUpFragment"
-            android:label="fragment_sign_up"
+            android:label="Sign Up"
             tools:layout="@layout/fragment_sign_up">
             <action
                 android:id="@+id/action_signUpFragment_to_logInFragment"

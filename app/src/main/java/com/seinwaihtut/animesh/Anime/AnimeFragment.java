@@ -1,7 +1,6 @@
 package com.seinwaihtut.animesh.Anime;
 
-import static android.app.Activity.RESULT_OK;
-
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +24,8 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
@@ -34,10 +35,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.seinwaihtut.animesh.App;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.DB.EpisodePOJO;
 import com.seinwaihtut.animesh.R;
-import com.seinwaihtut.animesh.Retrofit.JikanResponsePOJOs.To;
 import com.seinwaihtut.animesh.SharedViewModel;
 
 import org.jsoup.Jsoup;
@@ -58,6 +59,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AnimeFragment extends Fragment {
+    String BASE_URL = "https://nyaa.si";
+
+    NotificationManagerCompat notificationManager;
     private static final String LOG_TAG = "ANIME_FRAGMENT";
     EpisodeAdapter adapter;
     ImageView poster;
@@ -111,6 +115,9 @@ public class AnimeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        notificationManager =NotificationManagerCompat.from(getContext());
+
         Anime anime = AnimeFragmentArgs.fromBundle(getArguments()).getAnimeParcelable();
         poster = view.findViewById(R.id.iv_fragment_anime_image);
         titleTV = view.findViewById(R.id.tv_fragment_anime_title);
@@ -186,7 +193,7 @@ public class AnimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (!(anime.getMal_url().isEmpty())) {
-                    openMAL(anime.getMal_url());
+                    openURL(anime.getMal_url());
 
 
                 }
@@ -207,23 +214,6 @@ public class AnimeFragment extends Fragment {
             @Override
             public void onItemClick(View v, int position) {
                 openMagnet(adapter.getItemAtPosition(position).getMagnet_url());
-
-//                String download_uri = getActivity().getSharedPreferences("URIPermissions", Context.MODE_PRIVATE)
-//                        .getString("download_uri", "-1");
-//                Log.i(LOG_TAG, download_uri);
-//
-//                if (download_uri.equals("-1")) {
-//                    Toast.makeText(getActivity(), "Select download directory.", Toast.LENGTH_SHORT);
-//
-//                } else {
-//                    Boolean permissionGranted = checkForPermission(download_uri);
-//                    Log.i(LOG_TAG, permissionGranted.toString());
-//                    if (permissionGranted) {
-//                        downloadTorrentFile(Uri.parse(download_uri), adapter.getItemAtPosition(position));
-//                    } else {
-//                        Toast.makeText(getActivity(), "Check permission", Toast.LENGTH_SHORT);
-//                    }
-//                }
             }
         });
 
@@ -254,7 +244,8 @@ public class AnimeFragment extends Fragment {
         }
     }
 
-    private void openMAL(String url) {
+
+    private void openURL(String url) {
         Uri mal_url = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, mal_url);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
@@ -291,6 +282,8 @@ public class AnimeFragment extends Fragment {
         protected List<EpisodePOJO> doInBackground(String... s) {
             List<EpisodePOJO> episodeList = new ArrayList<>();
             //String search_string = s[0].replace(" ", "+");
+
+            //Browser automatically replace "spaces" with "+"s
             Uri uri = Uri.parse(NYAA_BASE_URL).buildUpon().appendQueryParameter("f", "0").appendQueryParameter("c", "1_2").appendQueryParameter("q", s[0]).appendQueryParameter("p", "1").build();
 
             String url = uri.toString();
@@ -340,12 +333,13 @@ public class AnimeFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case 3001: {
-                Toast.makeText(getContext(), "3001", Toast.LENGTH_SHORT).show();
+            case 3001: {//Open in web browser
+                Log.i("OpenInWeb", BASE_URL+adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
+                openURL(BASE_URL+adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
                 return true;
             }
-            case 3002: {
-                Toast.makeText(getContext(), "3002", Toast.LENGTH_SHORT).show();
+            case 3002: {//Open magnet link
+                openMagnet(adapter.getItemAtPosition(item.getGroupId()).getMagnet_url());
                 return true;
             }
             case 3003: {
@@ -355,7 +349,7 @@ public class AnimeFragment extends Fragment {
                 Log.i(LOG_TAG, download_uri);
 
                 if (download_uri.equals("-1")) {
-                    Toast.makeText(getActivity(), "Select download directory.", Toast.LENGTH_SHORT);
+                    Toast.makeText(getActivity(), "Select a download directory by tapping 3 dots.", Toast.LENGTH_SHORT);
 
                 } else {
                     Boolean permissionGranted = checkForPermission(download_uri);
@@ -378,10 +372,9 @@ public class AnimeFragment extends Fragment {
 
     private void downloadTorrentFile(Uri download_uri, EpisodePOJO episode) {
 
-        String BASE_URL = "https://nyaa.si";
         String torrentURLString = BASE_URL + episode.getTorrent_url();
         String fileName = episode.getUpload_title() + " " + System.currentTimeMillis() + ".torrent";
-
+        String tempFileName = fileName + ".temp";
         Log.i(LOG_TAG, torrentURLString);
         Log.i(LOG_TAG, download_uri.toString());
         OkHttpClient client = new OkHttpClient();
@@ -393,13 +386,30 @@ public class AnimeFragment extends Fragment {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                byte[] res = response.body().bytes();
-                DocumentFile file = DocumentFile.fromTreeUri(getContext(), download_uri).createFile("*/*", fileName);
-                if (file != null) {
-                    FileDescriptor fileDescriptor = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w").getFileDescriptor();
-                    new FileOutputStream(fileDescriptor).write(res);
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                byte[] res = new byte[0];
+                try {
+                    res = response.body().bytes();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                DocumentFile file = DocumentFile.fromTreeUri(getContext(), download_uri).createFile("*/*", tempFileName);
+
+                if (file.exists() & file != null) {
+                    FileDescriptor fileDescriptor = null;
+                    try {
+                        fileDescriptor = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w").getFileDescriptor();
+                        new FileOutputStream(fileDescriptor).write(res);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        file.renameTo(fileName);
+                        sendDownloadedNotification(episode.getUpload_title());
+                    }
+
+                }
+
             }
         });
     }
@@ -413,6 +423,19 @@ public class AnimeFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    private void sendDownloadedNotification(String title) {
+        Notification notification = new NotificationCompat.Builder(getContext(), App.CHANNEL_DOWNLOADED_ID)
+                .setSmallIcon(R.drawable.ic_file_download_done)
+                .setContentTitle("Download complete!")
+                .setContentText(title + " has been downloaded.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(title + " has been downloaded.")
+                )
+                .build();
+        notificationManager.notify(1, notification);
     }
 
 }

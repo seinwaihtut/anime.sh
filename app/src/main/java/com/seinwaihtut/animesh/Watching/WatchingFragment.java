@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.seinwaihtut.animesh.Airing.SeasonAdapter;
-import com.seinwaihtut.animesh.Anime.AnimeActivity;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.MainFragmentDirections;
 import com.seinwaihtut.animesh.R;
@@ -108,23 +107,13 @@ public class WatchingFragment extends Fragment {
                         sharedViewModel.getAllAnimeWatching().removeObserver(tempWatchingObserver);
                     }
                 });
-                Log.i("31102022:watchingFragment", "SwipeRefreshLayout");
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
 
     }
 
-    public void launchAnimeActivity(Anime anime) {
-        Intent intent = new Intent(getActivity(), AnimeActivity.class);
-        intent.putExtra("mal_id", anime.getMal_id());
-        intent.putExtra("mal_url", anime.getMal_url());
-        intent.putExtra("image_url", anime.getImage_url());
-        intent.putExtra("title", anime.getTitle());
 
-
-        startActivity(intent);
-    }
 
     public static WatchingFragment newInstance(String param1, String param2) {
         WatchingFragment fragment = new WatchingFragment();
@@ -150,6 +139,4 @@ public class WatchingFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_watching, container, false);
     }
-
-
 }
