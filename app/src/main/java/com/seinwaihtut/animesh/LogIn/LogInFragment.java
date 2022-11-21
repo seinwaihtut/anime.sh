@@ -82,7 +82,7 @@ public class LogInFragment extends Fragment {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()) {
                                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_container);
-                                    navController.navigate(LogInFragmentDirections.actionLogInFragmentToMainFragment2());
+                                    //navController.navigate(LogInFragmentDirections.actionLogInFragmentToMainFragment2());
                                     Log.d("LogInFragment", "signInWithEmail:success");
                                 }
 

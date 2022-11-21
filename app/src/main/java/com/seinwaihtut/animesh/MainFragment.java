@@ -55,7 +55,7 @@ public class MainFragment extends Fragment {
     SeasonAdapter seasonAdapter;
     WatchingAdapter watchingAdapter;
 
-    FirebaseUser user;
+    //FirebaseUser user;
 
     NavController navController;
 
@@ -83,7 +83,7 @@ public class MainFragment extends Fragment {
                 (tab, position) -> tab.setText(tabLayoutTitles.get(position))
         ).attach();
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        //user = FirebaseAuth.getInstance().getCurrentUser();
 
         navController = Navigation.findNavController(view);
     }
@@ -147,14 +147,15 @@ public class MainFragment extends Fragment {
                 //openDocumentTree();
                 return true;
             }
-            case R.id.action_bar_logout:
-                Log.i("MainFragment", "logout");
-                    FirebaseAuth.getInstance().signOut();
-                    Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
-                    navController.popBackStack();
-                    navController.navigate(R.id.login_nested_graph);
 
-                return true;
+//            case R.id.action_bar_logout:{
+//                Log.i("MainFragment", "logout");
+//                    FirebaseAuth.getInstance().signOut();
+//                    Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
+//                    navController.popBackStack();
+//                    navController.navigate(R.id.login_nested_graph);
+//
+//                return true;}
 
             default:
                 return super.onOptionsItemSelected(item);

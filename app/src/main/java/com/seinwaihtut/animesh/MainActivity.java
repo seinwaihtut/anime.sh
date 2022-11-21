@@ -19,7 +19,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     NavController navController;
     Toolbar toolbar;
-    private FirebaseUser user;
+    //private FirebaseUser user;
 
     @Override
     protected void onStart() {
@@ -40,17 +40,17 @@ public class MainActivity extends AppCompatActivity {
 
         Set<Integer> topLevelDestinations = new HashSet<>();
         topLevelDestinations.add(R.id.mainFragment);
-        topLevelDestinations.add(R.id.logInMainFragment);
+//        topLevelDestinations.add(R.id.logInMainFragment);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
 
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user==null){
-            navController.popBackStack();
-            navController.navigate(R.id.login_nested_graph);
-
-        }
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//        if(user==null){
+//            navController.popBackStack();
+//            navController.navigate(R.id.login_nested_graph);
+//
+//        }
     }
 }

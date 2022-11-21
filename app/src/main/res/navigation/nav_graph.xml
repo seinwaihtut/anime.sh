@@ -47,14 +47,7 @@
             android:id="@+id/logInFragment"
             android:name="com.seinwaihtut.animesh.LogIn.LogInFragment"
             android:label="LogIn"
-            tools:layout="@layout/fragment_log_in">
-            <action
-                android:id="@+id/action_logInFragment_to_mainFragment2"
-                app:destination="@id/mainFragment"
-                app:launchSingleTop="true"
-                app:popUpTo="@id/logInMainFragment"
-                app:popUpToInclusive="true" />
-        </fragment>
+            tools:layout="@layout/fragment_log_in"/>
         <fragment
             android:id="@+id/signUpFragment"
             android:name="com.seinwaihtut.animesh.LogIn.SignUpFragment"

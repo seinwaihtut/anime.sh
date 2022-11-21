@@ -110,7 +110,6 @@ public class WatchingFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
     }
 
 
