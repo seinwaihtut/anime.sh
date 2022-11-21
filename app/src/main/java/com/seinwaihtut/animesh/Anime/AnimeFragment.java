@@ -116,7 +116,7 @@ public class AnimeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        notificationManager =NotificationManagerCompat.from(getContext());
+        notificationManager = NotificationManagerCompat.from(getContext());
 
         Anime anime = AnimeFragmentArgs.fromBundle(getArguments()).getAnimeParcelable();
         poster = view.findViewById(R.id.iv_fragment_anime_image);
@@ -194,8 +194,6 @@ public class AnimeFragment extends Fragment {
             public void onClick(View v) {
                 if (!(anime.getMal_url().isEmpty())) {
                     openURL(anime.getMal_url());
-
-
                 }
             }
         });
@@ -217,7 +215,6 @@ public class AnimeFragment extends Fragment {
             }
         });
 
-
         searchEditText.setText(anime.getTitle());
         if (checkSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString())) {
             //When shared prefs is not empty, when user already used search
@@ -235,7 +232,6 @@ public class AnimeFragment extends Fragment {
         });
     }
 
-
     private void openMagnet(String url) {
         Uri magnet = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, magnet);
@@ -243,7 +239,6 @@ public class AnimeFragment extends Fragment {
             startActivity(intent);
         }
     }
-
 
     private void openURL(String url) {
         Uri mal_url = Uri.parse(url);
@@ -271,7 +266,6 @@ public class AnimeFragment extends Fragment {
         return sharedPreferences.contains(mal_id);
     }
 
-
     private static class NyaaAsyncTask extends AsyncTask<String, Void, List<EpisodePOJO>> {
         String NYAA_BASE_URL = "https://nyaa.si/"; //"https://nyaa.si/?f=0&c=1_2&q=yourself"
 
@@ -282,7 +276,6 @@ public class AnimeFragment extends Fragment {
         protected List<EpisodePOJO> doInBackground(String... s) {
             List<EpisodePOJO> episodeList = new ArrayList<>();
             //String search_string = s[0].replace(" ", "+");
-
             //Browser automatically replace "spaces" with "+"s
             Uri uri = Uri.parse(NYAA_BASE_URL).buildUpon().appendQueryParameter("f", "0").appendQueryParameter("c", "1_2").appendQueryParameter("q", s[0]).appendQueryParameter("p", "1").build();
 
@@ -334,8 +327,8 @@ public class AnimeFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case 3001: {//Open in web browser
-                Log.i("OpenInWeb", BASE_URL+adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
-                openURL(BASE_URL+adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
+                Log.i("OpenInWeb", BASE_URL + adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
+                openURL(BASE_URL + adapter.getItemAtPosition(item.getGroupId()).getNyaa_url());
                 return true;
             }
             case 3002: {//Open magnet link
@@ -343,8 +336,6 @@ public class AnimeFragment extends Fragment {
                 return true;
             }
             case 3003: {
-
-
                 String download_uri = getActivity().getSharedPreferences("URIPermissions", Context.MODE_PRIVATE).getString("download_uri", "-1");
                 Log.i(LOG_TAG, download_uri);
 
@@ -360,8 +351,6 @@ public class AnimeFragment extends Fragment {
                         Toast.makeText(getActivity(), "Check permission", Toast.LENGTH_SHORT);
                     }
                 }
-
-
                 return true;
             }
             default:
@@ -375,10 +364,10 @@ public class AnimeFragment extends Fragment {
         String torrentURLString = BASE_URL + episode.getTorrent_url();
         String fileName = episode.getUpload_title() + " " + System.currentTimeMillis() + ".torrent";
         String tempFileName = fileName + ".temp";
-        Log.i(LOG_TAG, torrentURLString);
-        Log.i(LOG_TAG, download_uri.toString());
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(torrentURLString).build();
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -393,23 +382,20 @@ public class AnimeFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                DocumentFile file = DocumentFile.fromTreeUri(getContext(), download_uri).createFile("*/*", tempFileName);
 
+                DocumentFile file = DocumentFile.fromTreeUri(getContext(), download_uri).createFile("*/*", tempFileName);
                 if (file.exists() & file != null) {
                     FileDescriptor fileDescriptor = null;
                     try {
                         fileDescriptor = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w").getFileDescriptor();
                         new FileOutputStream(fileDescriptor).write(res);
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
                         file.renameTo(fileName);
                         sendDownloadedNotification(episode.getUpload_title());
                     }
-
                 }
-
             }
         });
     }
@@ -437,5 +423,4 @@ public class AnimeFragment extends Fragment {
                 .build();
         notificationManager.notify(1, notification);
     }
-
 }
