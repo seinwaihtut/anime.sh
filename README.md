@@ -1,16 +1,13 @@
 # anime.sh
 A simple Android App to track currently airing anime shows.
-Made using jikan.moe, nyaa.si and Glide.
+Made using jikan.moe, retrofit and glide.
 
-![Airing tab](images/airing_page.PNG)
+![Airing tab](release/v1.0.0/images/airing.png)
 
-![Watching tab](images/watching_page.PNG)
+![Watching tab](release/v1.0.0/images/watching.png)
 
-![anime page](images/anime_page.PNG)
+![anime page](release/v1.0.0/images/anime.png)
 
-![custom search](images/anime_page_custom_search.PNG)
+Get the latest release (https://github.com/seinwaihtut/anime.sh/releases/tag/v1.0.0)
 
-Get the latest release (https://github.com/seinwaihtut/anime.sh/releases/tag/v0.2.2)
-
-If you encounter "Play Protect doesn't recognise this app's developer. Apps from unknown developers can sometimes be unsafe." and cannot install this app,
-You can probably fix it by turning off Play Protect in Google Play Store.
+You can ignore the Google Protect's warning message when sideloading App.
