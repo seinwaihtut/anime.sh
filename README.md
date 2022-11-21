@@ -10,7 +10,7 @@ Made using jikan.moe, nyaa.si and Glide.
 
 ![custom search](images/anime_page_custom_search.PNG)
 
-Get the latest release (https://github.com/seinwaihtut/anime.sh/releases/tag/v0.2.2)
+Get the latest build in release/[verison] folder.
 
 If you encounter "Play Protect doesn't recognise this app's developer. Apps from unknown developers can sometimes be unsafe." and cannot install this app,
 You can probably fix it by turning off Play Protect in Google Play Store.
