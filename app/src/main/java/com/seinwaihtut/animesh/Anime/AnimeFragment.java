@@ -199,37 +199,42 @@ public class AnimeFragment extends Fragment {
         });
 
 
-        //The following code block deals with episode recycler view and its related trigger events
-        List<EpisodePOJO> nyaaList = new ArrayList<>();
+//        //The following code block deals with episode recycler view and its related trigger events
+//        List<EpisodePOJO> nyaaList = new ArrayList<>();
+//
+//        RecyclerView recyclerView = view.findViewById(R.id.rv_anime_fragment_episodes_recycler_view);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+//
+//        adapter = EpisodeAdapter.getInstance();
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(adapter);
+//        adapter.setOnItemClickListener(new EpisodeAdapter.ClickListener() {
+//            @Override
+//            public void onItemClick(View v, int position) {
+//                openMagnet(adapter.getItemAtPosition(position).getMagnet_url());
+//            }
+//        });
+//
+//        searchEditText.setText(anime.getTitle());
+//        if (checkSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString())) {
+//            //When shared prefs is not empty, when user already used search
+//            searchEditText.setText(readSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString()));
+//        }
+//        new NyaaAsyncTask().execute(searchEditText.getText().toString());         //Load the data upon opening the fragment
+//
+//        searchButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String search_string = searchEditText.getText().toString();
+//                editSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString(), search_string);
+//                new NyaaAsyncTask().execute(search_string);
+//            }
+//        });
 
-        RecyclerView recyclerView = view.findViewById(R.id.rv_anime_fragment_episodes_recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
-        adapter = EpisodeAdapter.getInstance();
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new EpisodeAdapter.ClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                openMagnet(adapter.getItemAtPosition(position).getMagnet_url());
-            }
-        });
+        searchEditText.setVisibility(View.GONE);
+        searchButton.setVisibility(View.GONE);
 
-        searchEditText.setText(anime.getTitle());
-        if (checkSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString())) {
-            //When shared prefs is not empty, when user already used search
-            searchEditText.setText(readSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString()));
-        }
-        new NyaaAsyncTask().execute(searchEditText.getText().toString());         //Load the data upon opening the fragment
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String search_string = searchEditText.getText().toString();
-                editSharedPrefs(SHARED_PREFS_EPISODES_FILE, anime.getMal_id().toString(), search_string);
-                new NyaaAsyncTask().execute(search_string);
-            }
-        });
     }
 
     private void openMagnet(String url) {
