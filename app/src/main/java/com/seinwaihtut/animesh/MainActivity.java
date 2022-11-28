@@ -1,5 +1,7 @@
 package com.seinwaihtut.animesh;
 
+import static com.seinwaihtut.animesh.R.id.mainFragment;
+
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
