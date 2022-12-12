@@ -109,7 +109,9 @@ public class SeasonFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //swipeRefreshLayout.setRefreshing(true);
                 sharedViewModel.getCurrentSeason().observe(getViewLifecycleOwner(), new Observer<List<Anime>>() {
+
                     @Override
                     public void onChanged(List<Anime> networkList) {
                         SeasonAdapter seasonAdapter = SeasonAdapter.getInstance();
