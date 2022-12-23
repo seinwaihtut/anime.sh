@@ -64,6 +64,9 @@ dependencies {
     // See https://firebase.google.com/docs/android/setup#available-libraries
     // For example, add the dependencies for Firebase Authentication and Cloud Firestore
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
+    implementation 'com.google.firebase:firebase-firestore:24.4.1'
+
 
     implementation 'org.glassfish:javax.annotation:10.0-b28'
 

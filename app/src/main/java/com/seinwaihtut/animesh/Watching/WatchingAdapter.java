@@ -122,7 +122,6 @@ public class WatchingAdapter extends RecyclerView.Adapter<WatchingAdapter.ViewHo
         private final TextView broadcast;
         private final TextView genres;
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             poster = itemView.findViewById(R.id.iv_item_preview_watching_image);

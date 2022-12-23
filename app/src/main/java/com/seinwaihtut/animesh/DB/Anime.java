@@ -217,6 +217,10 @@ public class Anime implements Parcelable {
         this.genres = genres;
     }
 
+    public Anime(){
+        //empty comstructor needed
+    }
+
     public Anime(Integer mal_id, String mal_url, String image_url, String title) {
         this.mal_id = mal_id;
         this.mal_url = mal_url;

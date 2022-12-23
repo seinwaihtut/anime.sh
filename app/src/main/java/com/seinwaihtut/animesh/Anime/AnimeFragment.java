@@ -35,6 +35,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.seinwaihtut.animesh.App;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.DB.EpisodePOJO;
@@ -49,6 +59,7 @@ import org.jsoup.select.Elements;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +71,14 @@ import okhttp3.Response;
 
 public class AnimeFragment extends Fragment {
     String BASE_URL = "https://nyaa.si";
+
+    private static final String userEmail = "seinw.htut@gmail.com";
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference usersCollection = db.collection("users");
+    DocumentReference userDocument = usersCollection.document(userEmail);
+    CollectionReference watchingCollection = userDocument.collection("watching");
+
 
     NotificationManagerCompat notificationManager;
     private static final String LOG_TAG = "ANIME_FRAGMENT";
@@ -156,33 +175,54 @@ public class AnimeFragment extends Fragment {
         broadcast.setText(anime.getBroadcast_string());
         genres.setText("Genres: " + anime.getGenres());
 
-        //Fav button initial state
-        sharedViewModel.queryAnimeInDB(anime.getMal_id()).observe(getViewLifecycleOwner(), new Observer<Anime>() {
-            @Override
-            public void onChanged(Anime a) {
-                if (a != null) {
-                    if (anime.getMal_id().equals(a.getMal_id())) {
-                        favToggleButton.setChecked(true);
-                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
-                        favTextView.setText("In Watching");
-                    } else {
-                        favToggleButton.setChecked(false);
-                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
-                        favTextView.setText("Add to Watching");
-                    }
-                }
-            }
-        });
+//        DocumentReference documentReference = watchingCollection.document(anime.getMal_id().toString());
+//        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()){
+//                    DocumentSnapshot document = task.getResult();
+//                    if (document.exists()){
+//                        favToggleButton.setChecked(true);
+//                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
+//                        favTextView.setText("In Watching");
+//                    }else{
+//
+//                        favToggleButton.setChecked(false);
+//                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
+//                        favTextView.setText("Add to Watching");
+//                    }
+//                }
+//            }
+//        });
+
+        Boolean isInFav = readFromSharedPreferences(userEmail, anime.getMal_id().toString());
+        Log.d(LOG_TAG, "Is in fav, onviewcreated"+isInFav.toString());
+        if (isInFav){
+            favToggleButton.setChecked(true);
+            favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
+            favTextView.setText("In Watching");
+
+        }else{
+            favToggleButton.setChecked(false);
+            favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
+            favTextView.setText("Add to Watching");
+
+        }
+
+
 
         favToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (isChecked) {
-                    sharedViewModel.insert(anime);
+                    watchingCollection.document(anime.getMal_id().toString()).set(anime);
+                    writeToSharedPreferences(userEmail, anime.getMal_id().toString(), true);
                     favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
                     favTextView.setText("In Watching");
                 } else {
-                    sharedViewModel.delete(anime);
+                    watchingCollection.document(anime.getMal_id().toString()).delete();
+                    writeToSharedPreferences(userEmail, anime.getMal_id().toString(), false);
                     favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
                     favTextView.setText("Add to Watching");
                 }
@@ -422,5 +462,17 @@ public class AnimeFragment extends Fragment {
                 )
                 .build();
         notificationManager.notify(1, notification);
+    }
+
+
+    private Boolean readFromSharedPreferences(String user, String mal_id){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user, Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean(mal_id, false);
+    }
+    private void writeToSharedPreferences(String user, String mal_id, Boolean isFav){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(mal_id, isFav);
+        editor.apply();
     }
 }
