@@ -16,8 +16,14 @@
         app:showAsAction="never" />
 
 
-    <!--    <item-->
-    <!--        android:id="@+id/action_bar_logout"-->
-    <!--        android:title="Logout"-->
-    <!--        app:showAsAction="never" />-->
+    <item
+
+        android:id="@+id/configure_biometric"
+        android:title="Configure Biometric"
+        app:showAsAction="never"
+        />
+    <item
+            android:id="@+id/action_bar_logout"
+            android:title="Logout"
+            app:showAsAction="never" />
 </menu>

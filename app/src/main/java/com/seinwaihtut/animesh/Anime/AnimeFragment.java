@@ -31,12 +31,16 @@ import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -72,12 +76,12 @@ import okhttp3.Response;
 public class AnimeFragment extends Fragment {
     String BASE_URL = "https://nyaa.si";
 
-    private static final String userEmail = "seinw.htut@gmail.com";
-
+    private CollectionReference watchingCollection;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference usersCollection = db.collection("users");
-    DocumentReference userDocument = usersCollection.document(userEmail);
-    CollectionReference watchingCollection = userDocument.collection("watching");
+    private NavController navController;
+    private static final String BIOMETRIC_SHARED_PREFERENCES = "BIOMETRIC_SHARED_PREFERENCES";
+    private static final String BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG = "BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG";
+    SharedPreferences sharedPreferences;
 
 
     NotificationManagerCompat notificationManager;
@@ -111,7 +115,6 @@ public class AnimeFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     public static AnimeFragment newInstance(String param1, String param2) {
         AnimeFragment fragment = new AnimeFragment();
 
@@ -134,6 +137,8 @@ public class AnimeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_container);
 
         notificationManager = NotificationManagerCompat.from(getContext());
 
@@ -195,39 +200,53 @@ public class AnimeFragment extends Fragment {
 //            }
 //        });
 
-        Boolean isInFav = readFromSharedPreferences(userEmail, anime.getMal_id().toString());
-        Log.d(LOG_TAG, "Is in fav, onviewcreated"+isInFav.toString());
-        if (isInFav){
-            favToggleButton.setChecked(true);
-            favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
-            favTextView.setText("In Watching");
+        if (user!=null) {
+            watchingCollection = db.collection("users").document(user.getEmail()).collection("watching");
 
-        }else{
-            favToggleButton.setChecked(false);
-            favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
-            favTextView.setText("Add to Watching");
+
+            Boolean isInFav = readFromSharedPreferences(user.getEmail(), anime.getMal_id().toString());
+            Log.d(LOG_TAG, "Is in fav, onviewcreated"+isInFav.toString());
+            if (isInFav){
+                favToggleButton.setChecked(true);
+                favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
+                favTextView.setText("In Watching");
+            }else{
+                favToggleButton.setChecked(false);
+                favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
+                favTextView.setText("Add to Watching");
+            }
+
+            favToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    if (isChecked) {
+                        watchingCollection.document(anime.getMal_id().toString()).set(anime);
+                        writeToSharedPreferences(user.getEmail(), anime.getMal_id().toString(), true);
+                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
+                        favTextView.setText("In Watching");
+                    } else {
+                        watchingCollection.document(anime.getMal_id().toString()).delete();
+                        writeToSharedPreferences(user.getEmail(), anime.getMal_id().toString(), false);
+                        favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
+                        favTextView.setText("Add to Watching");
+                    }
+                }
+            });
+        }
+        else{
+
+            FirebaseAuth.getInstance().signOut();
+            FirebaseAuth.getInstance().signOut();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG, false);
+            editor.apply();
+
+            navController.navigate(R.id.login_nested_graph);
+
 
         }
 
-
-
-        favToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    watchingCollection.document(anime.getMal_id().toString()).set(anime);
-                    writeToSharedPreferences(userEmail, anime.getMal_id().toString(), true);
-                    favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav));
-                    favTextView.setText("In Watching");
-                } else {
-                    watchingCollection.document(anime.getMal_id().toString()).delete();
-                    writeToSharedPreferences(userEmail, anime.getMal_id().toString(), false);
-                    favToggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fav_grey));
-                    favTextView.setText("Add to Watching");
-                }
-            }
-        });
 
         malImageButton.setOnClickListener(new View.OnClickListener() {
             @Override

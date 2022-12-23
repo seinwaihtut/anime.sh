@@ -24,4 +24,9 @@
     <string name="register_already_have_an_account">Already have an account?</string>
     <string name="register_login">Login</string>
     <string name="confirm_password">Confirm Password</string>
+
+    <string name="termsandconditions">I have read and agreed to <a href="http://www.example.com/">terms and conditions</a>.</string>
+    <string name="biometric_warning">By setting up the app to use biometric login. You confirm that\n\n* All biometric data currently saved on this device are yours.\n* You will not let other people save biometric data on this device.\n* You device pass code is known only to you.
+
+    </string>
 </resources>

@@ -1,6 +1,8 @@
 package com.seinwaihtut.animesh.Airing;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +26,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.MainFragmentDirections;
 import com.seinwaihtut.animesh.R;
@@ -38,6 +48,14 @@ public class SeasonFragment extends Fragment {
     SeasonAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     NavController navController;
+
+    private static final String BIOMETRIC_SHARED_PREFERENCES = "BIOMETRIC_SHARED_PREFERENCES";
+    private static final String BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG = "BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG";
+    SharedPreferences sharedPreferences;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference watchingCollection;
+
 
     public SeasonFragment() {
     }
@@ -65,9 +83,24 @@ public class SeasonFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
         navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_container);
         swipeRefreshLayout = view.findViewById(R.id.season_swipe_refresh_layout);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        sharedPreferences = getActivity().getSharedPreferences(BIOMETRIC_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
+        if (user!=null){
+            watchingCollection = db.collection("users").document(user.getEmail()).collection("watching");
+
+        }else{
+            FirebaseAuth.getInstance().signOut();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG, false);
+            editor.apply();
+
+            navController.navigate(R.id.login_nested_graph);
+        }
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.season_recycler);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
@@ -87,23 +120,25 @@ public class SeasonFragment extends Fragment {
             public void onChanged(List arrayList) {
                 List<Anime> listFromNetwork = arrayList;
                 adapter.setData(arrayList);
+                Query q = watchingCollection.orderBy("title", Query.Direction.ASCENDING);
 
-                Observer tempWatchingObserver = new Observer<List<Anime>>() {
+                q.addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onChanged(List<Anime> listDB) {
-                        List<Anime> listFromDB = listDB;
-                        for (Anime anime: listFromDB){
-                            Integer id = anime.getMal_id();
-                            for (Anime a: listFromNetwork){
-                                if (id.equals(a.getMal_id())){
-                                    sharedViewModel.update(a);
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error==null){
+                            List<DocumentSnapshot> documents = value.getDocuments();
+                            for(DocumentSnapshot document: documents){
+                                Anime a_f = document.toObject(Anime.class);
+                                for (Anime anime: listFromNetwork){
+                                    if (anime.getMal_id().equals(a_f.getMal_id())){
+                                        watchingCollection.document(anime.getMal_id().toString()).set(anime);
+                                    }
                                 }
                             }
                         }
                     }
-                };
-                sharedViewModel.getAllAnimeWatching().observe(getViewLifecycleOwner(), tempWatchingObserver);
-                sharedViewModel.getAllAnimeWatching().removeObserver(tempWatchingObserver);
+                });
+
             }
         });
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

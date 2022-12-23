@@ -25,4 +25,7 @@
     <color name="secondaryDarkColorNight">#babdbe</color>
     <color name="primaryTextColorNight">#ffffff</color>
     <color name="secondaryTextColorNight">#000000</color>
+
+
+    <color name="checkedColor">#0B6623</color> <!-- forest -->
 </resources>

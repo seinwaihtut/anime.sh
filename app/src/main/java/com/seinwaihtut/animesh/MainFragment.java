@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -31,8 +33,16 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.seinwaihtut.animesh.Airing.SeasonAdapter;
 import com.seinwaihtut.animesh.Airing.SeasonFragment;
+import com.seinwaihtut.animesh.DB.Anime;
 import com.seinwaihtut.animesh.Watching.WatchingAdapter;
 import com.seinwaihtut.animesh.Watching.WatchingFragment;
 
@@ -43,11 +53,17 @@ import java.util.Map;
 
 public class MainFragment extends Fragment {
 
-    private static final String LOG_TAG = "MainFragment";
+    SharedPreferences userSharedPreferences;
 
+    private static final String LOG_TAG = "MainFragment";
+    private static final String BIOMETRIC_SHARED_PREFERENCES = "BIOMETRIC_SHARED_PREFERENCES";
+    private static final String BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG = "BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG";
+    SharedPreferences sharedPreferences;
+    private CollectionReference watchingCollection;
     MainFragmentAdapter adapter;
     ViewPager2 viewPager2;
     TabLayout tabLayout;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     SeasonFragment seasonFragment;
     WatchingFragment watchingFragment;
@@ -65,6 +81,9 @@ public class MainFragment extends Fragment {
         final Map<Integer, String> tabLayoutTitles = new HashMap<>();
         tabLayoutTitles.put(0, "Currently Airing");
         tabLayoutTitles.put(1, "Watching");
+
+        sharedPreferences = getActivity().getSharedPreferences(BIOMETRIC_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
 
         watchingFragment = new WatchingFragment();
         seasonFragment = new SeasonFragment();
@@ -86,6 +105,29 @@ public class MainFragment extends Fragment {
         //user = FirebaseAuth.getInstance().getCurrentUser();
 
         navController = Navigation.findNavController(view);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null){
+            userSharedPreferences = getActivity().getSharedPreferences(user.getEmail(), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = userSharedPreferences.edit();
+            watchingCollection = db.collection("users").document(user.getEmail()).collection("watching");
+            Query q = watchingCollection.orderBy("title", Query.Direction.ASCENDING);
+            q.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (error==null){
+                        List<DocumentSnapshot> documents = value.getDocuments();
+                        for (DocumentSnapshot document: documents){
+                            Anime a = document.toObject(Anime.class);
+                            editor.putBoolean(a.getMal_id().toString(), true);
+                            editor.apply();
+                        }
+                    }
+                }
+            });
+        }
+
+
     }
 
     public MainFragment() {
@@ -148,14 +190,24 @@ public class MainFragment extends Fragment {
                 return true;
             }
 
-//            case R.id.action_bar_logout:{
-//                Log.i("MainFragment", "logout");
-//                    FirebaseAuth.getInstance().signOut();
-//                    Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
-//                    navController.popBackStack();
-//                    navController.navigate(R.id.login_nested_graph);
-//
-//                return true;}
+            case R.id.action_bar_logout:{
+                Log.i("MainFragment", "logout");
+                FirebaseAuth.getInstance().signOut();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG, false);
+                editor.apply();
+                navController.navigate(MainFragmentDirections.actionMainFragmentToLoginNestedGraph());
+
+                return true;}
+            case R.id.configure_biometric:{
+
+                FirebaseAuth.getInstance().signOut();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(BIOMETRIC_SHARED_PREFERENCES_ENABLED_FLAG, false);
+                editor.apply();
+                navController.navigate(MainFragmentDirections.actionMainFragmentToLoginNestedGraph());
+                Toast.makeText(getContext(), "Please login to verify your identity.", Toast.LENGTH_SHORT).show();
+            }
 
             default:
                 return super.onOptionsItemSelected(item);

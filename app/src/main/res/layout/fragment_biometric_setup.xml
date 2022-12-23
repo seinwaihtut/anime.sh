@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Login.BiometricSetupFragment"
+    android:orientation="vertical"
+    >
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/biometric_email_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:helperTextTextColor="@android:color/holo_red_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView3"
+        app:startIconDrawable="@drawable/ic_outline_email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/biometric_email_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/biometric_password_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:endIconMode="password_toggle"
+        app:helperTextTextColor="@android:color/holo_red_dark"
+        app:layout_constraintStart_toStartOf="@+id/biometric_email_layout"
+        app:layout_constraintTop_toBottomOf="@+id/biometric_email_layout"
+        app:startIconDrawable="@drawable/ic_outline_lock">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/biometric_password_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/biometric_biometric_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="32dp"
+        android:text="Lock APP with Biometric Authentication"
+        app:layout_constraintEnd_toEndOf="@+id/biometric_email_layout"
+        app:layout_constraintStart_toStartOf="@+id/biometric_email_layout"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/biometric_warning"
+        app:layout_constraintEnd_toEndOf="@+id/biometric_email_layout"
+        app:layout_constraintStart_toStartOf="@+id/biometric_password_layout"
+        app:layout_constraintTop_toBottomOf="@+id/biometric_password_layout" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Setup biometrics to login to your app without entering credentials."
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline4"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.02" />
+
+    <TextView
+        android:id="@+id/biometric_reset_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot password"
+        app:layout_constraintStart_toStartOf="@+id/biometric_biometric_button"
+        app:layout_constraintTop_toBottomOf="@+id/biometric_biometric_button" />
+
+    <TextView
+        android:id="@+id/biometric_register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register Now"
+        app:layout_constraintEnd_toEndOf="@+id/biometric_biometric_button"
+        app:layout_constraintTop_toBottomOf="@+id/biometric_biometric_button" />
+</androidx.constraintlayout.widget.ConstraintLayout>
